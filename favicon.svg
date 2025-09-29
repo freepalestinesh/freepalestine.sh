@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00a651"/>
+      <stop offset="1" stop-color="#007a3d"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <!-- Rind -->
+    <path d="M6 38c0 0 10 20 26 20s26-20 26-20c-17 4-35 4-52 0z" fill="url(#g)"/>
+    <!-- White pith -->
+    <path d="M8 36c16 3.5 32 3.5 48 0c-1.2 2.2-9.9 16-24 16S9.2 38.2 8 36z" fill="#f5f5f5"/>
+    <!-- Red flesh -->
+    <path d="M8 36C14 24 26 16 32 16s18 8 24 20c-16 3.5-32 3.5-48 0z" fill="#d62828"/>
+    <!-- Seeds -->
+    <ellipse cx="22" cy="30" rx="1.4" ry="2.2" fill="#111"/>
+    <ellipse cx="28" cy="28" rx="1.4" ry="2.2" fill="#111"/>
+    <ellipse cx="34" cy="29" rx="1.4" ry="2.2" fill="#111"/>
+    <ellipse cx="40" cy="31" rx="1.4" ry="2.2" fill="#111"/>
+  </g>
+</svg>

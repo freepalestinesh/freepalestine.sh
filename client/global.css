@@ -1,0 +1,191 @@
+/* PalestineButton Styles */
+.palestine-learn-more {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 1.1rem;
+  font-family: inherit;
+  width: 12rem;
+  height: auto;
+}
+.palestine-circle {
+  transition: all 0.45s cubic-bezier(0.65,0,.076,1);
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 3rem;
+  height: 3rem;
+  /* Middle slice changed to red (#ce1126) to ensure the button displays red instead of white */
+  background: linear-gradient(180deg, #000 0% 33%, #ce1126 33% 66%, #009739 66% 100%);
+  border-radius: 1.625rem;
+}
+.palestine-icon-arrow {
+  transition: all 0.45s cubic-bezier(0.65,0,.076,1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.625rem;
+  margin: auto;
+  width: 1.125rem;
+  height: 0.125rem;
+  background: none;
+}
+.palestine-icon-arrow::before {
+  position: absolute;
+  content: '';
+  top: -0.25rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #ce1126;
+  border-right: 0.125rem solid #ce1126;
+  transform: rotate(45deg);
+}
+.palestine-button-text {
+  transition: all 0.45s cubic-bezier(0.65,0,.076,1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0;
+  margin: 0 0 0 1.85rem;
+  color: #000;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+.palestine-learn-more:hover .palestine-circle {
+  /* On hover: change the middle (previously white) slice to red */
+  width: 100%;
+  background: linear-gradient(90deg, #000 0% 25%, #ce1126 25% 50%, #009739 50% 75%, #ce1126 75% 100%);
+}
+.palestine-learn-more:hover .palestine-button-text {
+  color: #fff;
+  text-shadow: 0 1px 2px #000;
+}
+/** @import must precede all other statements */
+/* Removed external font import to avoid any third‑party requests */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    /* Core palette inspired by the Palestinian flag */
+    /* White background, near-black text */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Green as primary, Red as accent */
+    --primary: 153 100% 24%; /* #007A3D */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 15%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 353 85% 44%; /* #CE1126 */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 153 100% 24%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar tokens aligned to palette */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 153 100% 24%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 353 85% 44%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 85%;
+    --sidebar-ring: 153 100% 24%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 153 100% 45%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 353 85% 60%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 153 100% 45%;
+
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 153 100% 45%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 353 85% 60%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 153 100% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  ::selection {
+    /* Moderner Flaggenverlauf: Schwarz, Weiß, Grün, Rot */
+    background: linear-gradient(
+      90deg,
+      #000 0% 25%,
+      #fff 25% 50%,
+      #009739 50% 75%,
+      #ce1126 75% 100%
+    );
+    color: hsl(var(--accent-foreground));
+  }
+}
