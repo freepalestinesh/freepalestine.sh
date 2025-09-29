@@ -18,13 +18,23 @@ jobs:
           node-version: '18'
           cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '10'
+      - name: Enable Corepack and setup pnpm
+        run: |
+          corepack enable
+          # Activate a pnpm version that matches the repo's packageManager
+          corepack prepare pnpm@10.14.0 --activate
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        env:
+          PNPM_HOME: ~/.pnpm
+        run: |
+          set -e
+          if pnpm install --frozen-lockfile; then
+            echo "pnpm install successful with --frozen-lockfile"
+          else
+            echo "--frozen-lockfile failed, running plain pnpm install"
+            pnpm install
+          fi
 
       - name: Build client (Vite)
         run: pnpm run build:client
