@@ -2,6 +2,13 @@ import path from "path";
 import { createServer } from "./index";
 import * as express from "express";
 import path from "node:path";
+import rateLimit from "express-rate-limit";
+
+// set up rate limiter: maximum of 100 requests per 15 minutes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
 
 const app = createServer();
 const port = process.env.PORT || 3000;
@@ -9,6 +16,9 @@ const port = process.env.PORT || 3000;
 // In production, serve the built SPA files
 const __dirname = import.meta.dirname;
 const distPath = path.join(__dirname, "../spa");
+// Rate limiting middleware - apply to all requests
+app.use(limiter);
+
 
 // Serve static files
 app.use(express.static(distPath));
