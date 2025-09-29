@@ -14,18 +14,18 @@ interface PostItem {
 
 const posts: PostItem[] = [
   {
-    title: "Willkommen bei freepalestine.sh",
+    title: "Welcome to freepalestine.sh",
     date: "2025-01-01",
-    slug: "willkommen",
+    slug: "welcome",
     excerpt:
-      "An independent, international, text-based blog. Clear. Direct. Without distraction..",
+      "An independent, international, text-based blog. Minimal, fast, accessible.",
     tags: ["goals"],
   },
 ];
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString("de-DE", {
+    return new Date(iso).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -48,7 +48,7 @@ export default function Index() {
           freepalestine.sh
         </h1>
         <p className="mt-2 text-muted-foreground">
-        free palestine movement est 29.09.2025 
+          An independent, international, text-based blog. Minimal, fast, accessible.
         </p>
         <div className="mt-8 md:mt-10 flex justify-center">
           {/* Flag cube component inserted here. Add extra bottom spacing so the
