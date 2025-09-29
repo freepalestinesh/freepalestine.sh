@@ -1,44 +1,44 @@
-name: Build and deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          # ensure the action can push back (uses GITHUB_TOKEN)
-          persist-credentials: true
+
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
 
-      - name: Install dependencies (npm)
-        run: npm install
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm@10.14.0
+          echo "Installed pnpm version:"
+          pnpm --version
+          echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
 
-      - name: Build (client + server)
-        # This runs your local equivalent: npm run build -> builds client and server
-        run: npm run build
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile || pnpm install
 
-      - name: Prepare SPA fallback
-        # GitHub Pages serves 404.html for unknown routes; copy index.html so client-side routing works
-        run: cp ./dist/spa/index.html ./dist/spa/404.html
+      - name: Build client (Vite)
+        run: pnpm run build:client
+
+      - name: Copy CNAME (if present) into publish dir
+        run: |
+          if [ -f CNAME ]; then
+            cp CNAME dist/spa/CNAME
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/spa       
-          publish_branch: gh-pages   
-          keep_history: true
-          cname: freepalestine.sh
+          publish_dir: ./dist/spa
