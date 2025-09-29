@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages v1
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -23,6 +23,19 @@ jobs:
           corepack enable
           # Activate a pnpm version that matches the repo's packageManager
           corepack prepare pnpm@10.14.0 --activate
+
+      - name: "Debug: print versions and PATH"
+        run: |
+          echo "-- node version --"
+          node --version || true
+          echo "-- corepack version --"
+          corepack --version || true
+          echo "-- pnpm version (should be available now) --"
+          pnpm --version || echo "pnpm not found"
+          echo "-- which pnpm --"
+          which pnpm || true
+          echo "-- PATH --"
+          echo $PATH
 
       - name: Install dependencies
         env:
