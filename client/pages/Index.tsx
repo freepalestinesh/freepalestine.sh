@@ -21,39 +21,9 @@ const posts: PostItem[] = [
     date: "2025-01-01",
     slug: "willkommen",
     excerpt:
-      "Ein unabhängiger, internationaler, textbasierter Blog. Klar. Direkt. Ohne Ablenkung.",
-    tags: ["intro"],
+      "An independent, international, text-based blog. Clear. Direct. Without distraction..",
+    tags: ["goals"],
   },
-  {
-    title: "Warum ein textbasierter Blog?",
-    date: "2025-01-05",
-    slug: "warum-text",
-    excerpt:
-      "Text ist barrierearm, schnell und zugänglich. Inhalte stehen im Mittelpunkt — nicht das Drumherum.",
-    tags: ["gedanken"],
-  },
-  {
-    title: "Solidarität, Stimmen, Geschichten",
-    date: "2025-01-08",
-    slug: "solidaritaet",
-    excerpt:
-      "Was zählt sind Stimmen und Erfahrungen. Dieser Ort sammelt sie — unabhängig und persönlich.",
-  },
-  {
-    title: "Richtlinien & Transparenz",
-    date: "2025-01-10",
-    slug: "richtlinien",
-    excerpt:
-      "Keine Werbung, keine Tracking-Skripte. Inhalt zuerst. Respektvoller Umgang ist Voraussetzung.",
-  },
-  {
-    title: "Archiv & Mitmachen (bald)",
-    date: "2025-01-12",
-    slug: "archiv-mitmachen",
-    excerpt:
-      "Offenes Archiv und Beiträge von Leser:innen sind geplant. Bis dahin: Feedback willkommen.",
-  },
-];
 
 function formatDate(iso: string) {
   try {
@@ -80,8 +50,7 @@ export default function Index() {
           freepalestine.sh
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Ein unabhängiger, internationaler, textbasierter Blog. Minimal, schnell,
-          barrierearm. Farben: Schwarz, Weiß, Rot, Grün.
+        free palestine movement est 29.09.2025 
         </p>
         <div className="mt-8 md:mt-10 flex justify-center">
           {/* Flag cube component inserted here. Add extra bottom spacing so the
