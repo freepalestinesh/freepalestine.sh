@@ -1,65 +1,44 @@
-name: Deploy to GitHub Pages
+name: Build and deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'pnpm'
+          # ensure the action can push back (uses GITHUB_TOKEN)
+          persist-credentials: true
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
 
-      - name: Enable Corepack and setup pnpm
-        run: |
-          corepack enable
-          # Activate a pnpm version that matches the repo's packageManager
-          corepack prepare pnpm@10.14.0 --activate
+      - name: Install dependencies (npm)
+        run: npm install
 
-      - name: "Debug: print versions and PATH"
-        run: |
-          echo "-- node version --"
-          node --version || true
-          echo "-- corepack version --"
-          corepack --version || true
-          echo "-- pnpm version (should be available now) --"
-          pnpm --version || echo "pnpm not found"
-          echo "-- which pnpm --"
-          which pnpm || true
-          echo "-- PATH --"
-          echo $PATH
+      - name: Build (client + server)
+        # This runs your local equivalent: npm run build -> builds client and server
+        run: npm run build
 
-      - name: Install dependencies
-        env:
-          PNPM_HOME: ~/.pnpm
-        run: |
-          set -e
-          if pnpm install --frozen-lockfile; then
-            echo "pnpm install successful with --frozen-lockfile"
-          else
-            echo "--frozen-lockfile failed, running plain pnpm install"
-            pnpm install
-          fi
-
-      - name: Build client (Vite)
-        run: pnpm run build:client
-
-      - name: Copy CNAME (if present) into publish dir
-        run: |
-          if [ -f CNAME ]; then
-            cp CNAME dist/spa/CNAME
-          fi
+      - name: Prepare SPA fallback
+        # GitHub Pages serves 404.html for unknown routes; copy index.html so client-side routing works
+        run: cp ./dist/spa/index.html ./dist/spa/404.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/spa
+          publish_dir: ./dist/spa       
+          publish_branch: gh-pages   
+          keep_history: true
+          cname: freepalestine.sh
