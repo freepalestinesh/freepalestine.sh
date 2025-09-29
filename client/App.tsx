@@ -21,7 +21,7 @@ function Header() {
           freepalestine.sh
         </Link>
         <span className="text-sm text-muted-foreground">
-          Internationaler, unabhängiger, textbasierter Blog
+          independent journalism. 
         </span>
       </div>
     </header>
@@ -36,7 +36,6 @@ function Footer() {
           © {new Date().getFullYear()} <Link to="/" className="underline underline-offset-4">freepalestine.sh</Link>
         </p>
         <p>
-          Für unabhängige Stimmen. Farben: Schwarz, Weiß, Rot, Grün.
         </p>
       </div>
     </footer>
