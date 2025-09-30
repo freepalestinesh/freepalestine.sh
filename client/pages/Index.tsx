@@ -12,17 +12,6 @@ interface PostItem {
   tags?: string[];
 }
 
-const posts: PostItem[] = [
-  {
-    title: "Welcome to freepalestine.sh",
-    date: "2025-01-01",
-    slug: "welcome",
-    excerpt:
-      "An independent, international, text-based blog. Minimal, fast, accessible.",
-    tags: ["goals"],
-  },
-];
-
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("en-US", {
@@ -41,6 +30,20 @@ export default function Index() {
     getAllPosts().then(setPostsData);
   }, []);
 
+  const first = postsData[0];
+
+  // Extract only the first paragraph from the HTML of the first post.
+  const firstParagraphHTML = (() => {
+    if (!first) return "";
+    const html = first.html || "";
+    if (html.includes("</p>")) {
+      const p = html.split(/<\/p>/i)[0];
+      return p.endsWith("</p>") ? p : p + "</p>";
+    }
+    const raw = first.excerpt || html;
+    return `<p>${raw.substring(0, 320)}${raw.length > 320 ? "…" : ""}</p>`;
+  })();
+
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
       <section className="mb-10">
@@ -50,10 +53,10 @@ export default function Index() {
         <p className="mt-2 text-muted-foreground">
           An independent, international, text-based blog. Minimal, fast, accessible.
         </p>
-        {/* Hero-Cube Block mit großzügigem vertikalem Raum */}
-        <div className="mt-24 md:mt-40 flex justify-center">
+        {/* Hero cube with generous vertical space (reduced on small screens) */}
+        <div className="mt-12 md:mt-36 flex justify-center">
           <div
-            className="relative z-10 mb-56 md:mb-[22rem] lg:mb-[26rem]"
+            className="relative z-10 mb-40 md:mb-[20rem] lg:mb-[24rem]"
             aria-hidden="true"
           >
             <FlagCube />
@@ -61,46 +64,75 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Postliste bewusst unterhalb der visuellen Cube-Zone gestartet */}
-      <div className="relative z-20 pt-6">
-        <ul className="divide-y">
-          {postsData.map((post) => (
-            <li key={post.slug} className="py-5">
-              <article>
-                <header className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className="not-prose text-xl font-semibold">
-                    <Link
-                      to={`/post/${post.slug}`}
-                      className="underline decoration-transparent hover:decoration-current"
-                    >
-                      {post.title}
-                    </Link>
-                  </h2>
-                  <time className="text-sm text-muted-foreground">
-                    {formatDate(post.date || '')}
-                  </time>
-                </header>
-                <div
-                  className="mt-2 text-sm leading-relaxed text-foreground/80"
-                  dangerouslySetInnerHTML={{ __html: post.html }}
-                />
-                {post.tags && post.tags.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                    {post.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded border px-2 py-0.5 text-muted-foreground"
-                      >
-                        #{t}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Intro article (first post) shortened to first paragraph */}
+      {first && (
+        <article className="relative z-20 pb-8 md:pb-10 border-b">
+          <header className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="not-prose text-xl font-semibold">
+              <Link
+                to={`/post/${first.slug}`}
+                className="underline decoration-transparent hover:decoration-current"
+              >
+                {first.title}
+              </Link>
+            </h2>
+            <time className="text-sm text-muted-foreground">
+              {formatDate(first.date || "")}
+            </time>
+          </header>
+          <div
+            className="mt-3 text-sm leading-relaxed text-foreground/80"
+            dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
+          />
+          <div className="mt-3">
+            <Link
+              to={`/post/${first.slug}`}
+              className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
+            >
+              Read full article →
+            </Link>
+          </div>
+          {first.tags && first.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              {first.tags.map((t) => (
+                <span
+                  key={t}
+                  className="rounded border px-2 py-0.5 text-muted-foreground"
+                >
+                  #{t}
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
+      )}
+
+      {/* Remaining posts (from index 1 onward) */}
+      <ul className="divide-y">
+        {postsData.slice(1).map((post) => (
+          <li key={post.slug} className="py-5">
+            <article>
+              <header className="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className="not-prose text-lg font-semibold">
+                  <Link
+                    to={`/post/${post.slug}`}
+                    className="underline decoration-transparent hover:decoration-current"
+                  >
+                    {post.title}
+                  </Link>
+                </h3>
+                <time className="text-sm text-muted-foreground">
+                  {formatDate(post.date || "")}
+                </time>
+              </header>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+                {(post.excerpt || "").substring(0, 180).replace(/\s+\S*$/, "")}
+                {(post.excerpt || "").length > 180 ? "…" : ""}
+              </p>
+            </article>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
