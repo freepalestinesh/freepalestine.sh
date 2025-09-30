@@ -18,27 +18,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.0'   # Angepasst (vorher '18')
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm@10.14.0
-          echo "Installed pnpm version:"
-          pnpm --version
-          echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
+          node-version: '20.19.0'
+          cache: 'npm'
 
       - name: Install dependencies
         run: |
-          pnpm install --frozen-lockfile || pnpm install
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "WARN: No package-lock.json found, using npm install"
+            npm install
+          fi
 
       - name: Build client (Vite)
-        run: pnpm run build:client
+        run: npm run build:client
 
       - name: Copy CNAME (if present) into publish dir
         run: |
           if [ -f CNAME ]; then
-            cp CNAME dist/spa/CNAME
+            cp CNAME dist/spa/CNAME 2>/dev/null || cp CNAME dist/CNAME 2>/dev/null || true
           fi
 
       - name: Deploy to GitHub Pages
