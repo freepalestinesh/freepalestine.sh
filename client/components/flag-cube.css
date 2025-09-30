@@ -17,7 +17,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #25335b;
+  background: #ffffff; /* Blue removed, now white */
 }
 
 /* Wrapper ermöglicht zentrierte Einbettung im bestehenden Layout */
@@ -29,7 +29,7 @@ body {
 
 .container {
   position: relative;
-  top: -80px;
+  top: 80px; /* Cube weiter nach unten verschoben */
   transform: skewY(-20deg);
 }
 
@@ -108,7 +108,7 @@ body {
 .container .cube > div > span:hover::before,
 .container .cube > div > span:hover::after {
   transition-duration: 0s;
-  background: var(--hover-color-light);
+  background: var(--hover-color);
 }
 
 /* Palästina Hover-Farben */
