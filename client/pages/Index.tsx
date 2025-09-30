@@ -50,10 +50,10 @@ export default function Index() {
         <p className="mt-2 text-muted-foreground">
           An independent, international, text-based blog. Minimal, fast, accessible.
         </p>
-        <div className="mt-8 md:mt-10 flex justify-center">
-          {/* Flag cube component inserted here. Add extra bottom spacing so the
-              posts list starts further down and the cube stands alone visually. */}
-          <div className="mb-24">
+        {/* Increased top spacing to visually separate the hero from the cube */}
+        <div className="mt-16 md:mt-24 flex justify-center">
+          {/* Increased bottom spacing so posts start further below the cube */}
+          <div className="mb-40 md:mb-56 relative z-10">
             <FlagCube />
           </div>
         </div>
