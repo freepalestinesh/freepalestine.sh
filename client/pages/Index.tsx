@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
-
+export { default } from "../../client/pages/Index";
 export default function Index() {
   const { lang = "en" } = useParams();
   const { t, formatDate } = useI18n();
