@@ -1,6 +1,10 @@
 import React from "react";
 import "./flag-cube.css";
 
+/**
+ * Original-Look mit scale-Wrapper für konsistente Proportionen auf Mobile.
+ * Keine interne Geometrieverzerrung – nur äußere Skalierung.
+ */
 export default function FlagCube() {
   return (
     <div className="flag-cube-root">
@@ -23,6 +27,7 @@ export default function FlagCube() {
               <span style={{ ["--i" as any]: 1 }} />
             </div>
           </div>
+
           <div className="cube">
             <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
               <span style={{ ["--i" as any]: 3 }} />
@@ -40,6 +45,7 @@ export default function FlagCube() {
               <span style={{ ["--i" as any]: 1 }} />
             </div>
           </div>
+
           <div className="cube">
             <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
               <span style={{ ["--i" as any]: 3 }} />
