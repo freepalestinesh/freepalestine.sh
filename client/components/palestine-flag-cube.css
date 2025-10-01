@@ -1,57 +1,23 @@
 /* ==========================================================================
-   Palestine Flag Cube Stable (Optimierte Version)
-   - Namespace: .pfc-
-   - Skalierung: interne transform stage
-   - Themen-Variablen + Reduced Motion + Modifier Klassen
+   Palestine Flag Cube Stable
+   - Keine globalen Reset-Selektoren
+   - Fixe Stage (Quadrat), interne Skalierung via transform
+   - Prefixed (.pfc-)
    ========================================================================== */
 
-:root {
-  /* Theme Colors (Palästina) – leicht justierbar */
-  --pfc-color-black: #000000;
-  --pfc-color-white: #ffffff;
-  --pfc-color-white-soft: #f2f2f2;
-  --pfc-color-white-softer: #e6e6e6;
-  --pfc-color-green: #007a3d;
-  --pfc-color-green-light: #00994d;
-  --pfc-color-green-lighter: #33aa66;
-  --pfc-color-red: #ce1126;
-  --pfc-color-red-light: #e63946;
-  --pfc-color-red-lighter: #f06263;
-  --pfc-shadow-tile: 0 4px 14px -2px rgba(0,0,0,0.18),
-    0 2px 6px -1px rgba(0,0,0,0.25),
-    0 0 0 1px rgba(0,0,0,0.05) inset;
-}
-
-/* Root Stage */
 .pfc-root {
   --pfc-base: 520px;
   --pfc-scale: 1;
   --pfc-revert: 6s;
 
   width: 100%;
-  aspect-ratio: 1 / 1;              /* Moderne Browser */
+  aspect-ratio: 1 / 1;
   max-width: var(--pfc-base);
   position: relative;
   margin: 0 auto;
   pointer-events: none;
   line-height: 0;
-  font-size: 0;
 }
-
-/* Fallback für Browser ohne aspect-ratio */
-@supports not (aspect-ratio: 1 / 1) {
-  .pfc-root::before {
-    content: "";
-    display: block;
-    padding-top: 100%;
-  }
-  .pfc-root > .pfc-viewport {
-    position: absolute;
-    inset: 0;
-  }
-}
-
-.pfc-root.pfc-no-hover { --pfc-revert: 0s; }
 
 .pfc-viewport {
   position: absolute;
@@ -61,17 +27,15 @@
 .pfc-scale {
   position: absolute;
   inset: 0;
+  transform: translate(-50%, -50%) scale(var(--pfc-scale));
   top: 50%;
   left: 50%;
   width: var(--pfc-base);
   height: var(--pfc-base);
-  transform: translate(-50%, -50%) scale(var(--pfc-scale));
   transform-origin: center center;
   pointer-events: none;
-  will-change: transform;
 }
 
-/* Container mit Projektions-Skew */
 .pfc-container {
   position: relative;
   top: -80px;
@@ -79,23 +43,22 @@
   pointer-events: none;
 }
 
-/* Layer Staffeln */
 .pfc-layer {
   position: relative;
   z-index: 2;
   pointer-events: none;
-  transition: transform 300ms ease;
 }
+
 .pfc-layer:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
+
 .pfc-layer:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
 }
 
-/* Spalten */
 .pfc-col {
   position: absolute;
   display: flex;
@@ -105,36 +68,39 @@
   pointer-events: none;
 }
 
-/* Tiles */
 .pfc-col > span {
-  --flag-color: var(--pfc-color-white);
-  --flag-color-light: var(--pfc-color-white-soft);
-  --flag-color-lighter: var(--pfc-color-white-softer);
   position: relative;
   display: inline-block;
   width: 50px;
   height: 50px;
-  z-index: calc(var(--i));
+  z-index: calc(1 * var(--i));
   cursor: pointer;
   pointer-events: auto;
+
+  --flag-color: #ffffff;
+  --flag-color-light: #f2f2f2;
+  --flag-color-lighter: #e6e6e6;
   background: var(--flag-color);
-  transition:
-    background var(--pfc-revert) ease,
-    filter var(--pfc-revert) ease,
-    box-shadow 240ms ease;
+
+  transition-property: background, filter;
+  transition-duration: var(--pfc-revert);
+  transition-timing-function: ease;
+
   border-radius: 9px;
-  box-shadow: var(--pfc-shadow-tile);
+  box-shadow:
+    0 4px 14px -2px rgba(0,0,0,0.18),
+    0 2px 6px -1px rgba(0,0,0,0.25),
+    0 0 0 1px rgba(0,0,0,0.05) inset;
   filter: brightness(0.97);
   overflow: visible;
 }
 
-/* Pseudo-Kanten */
 .pfc-col > span::before,
 .pfc-col > span::after {
   content: "";
   position: absolute;
-  border-radius: 6px;
   transition: background var(--pfc-revert) ease;
+  border-radius: 6px;
 }
 
 .pfc-col > span::before {
@@ -160,38 +126,35 @@
   border-top-left-radius: 8px;
 }
 
-/* Farbzuweisungen pro Spalten-Gruppe */
+/* Farbzuweisungen (Palästina-Farblogik + rotes Dreieck) */
 .pfc-layer > .pfc-col:nth-child(1) > span {
-  --hover-color: var(--pfc-color-black);
+  --hover-color: #000000;
   --hover-color-light: #2d2d2d;
   --hover-color-lighter: #4f4f4f;
 }
 .pfc-layer > .pfc-col:nth-child(2) > span {
-  --hover-color: var(--pfc-color-white);
-  --hover-color-light: var(--pfc-color-white-soft);
-  --hover-color-lighter: var(--pfc-color-white-softer);
+  --hover-color: #ffffff;
+  --hover-color-light: #f2f2f2;
+  --hover-color-lighter: #e6e6e6;
 }
 .pfc-layer > .pfc-col:nth-child(3) > span {
-  --hover-color: var(--pfc-color-green);
-  --hover-color-light: var(--pfc-color-green-light);
-  --hover-color-lighter: var(--pfc-color-green-lighter);
+  --hover-color: #007a3d;
+  --hover-color-light: #00994d;
+  --hover-color-lighter: #33aa66;
 }
 
-/* Linkes rotes Dreieck (oberster Würfel je Spalte) */
 .pfc-col > span:first-child {
-  --hover-color: var(--pfc-color-red);
-  --hover-color-light: var(--pfc-color-red-light);
-  --hover-color-lighter: var(--pfc-color-red-lighter);
+  --hover-color: #ce1126;
+  --hover-color-light: #e63946;
+  --hover-color-lighter: #f06263;
 }
 
-/* Hover */
+/* Hover Desktop */
 @media (hover:hover) {
   .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover {
     transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1)
-      drop-shadow(0 0 10px var(--hover-color))
-      drop-shadow(0 0 18px var(--hover-color));
+    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
   }
   .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::before,
   .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::after {
@@ -200,65 +163,11 @@
   }
 }
 
-/* Touch (Tap) */
+/* Touch */
 @media (hover:none) {
   .pfc-root:not(.pfc-no-hover) .pfc-col > span:active {
     transition-duration: 0s;
     background: var(--hover-color);
     filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
   }
-}
-
-/* Reduced Motion – kein langes Ausfaden */
-@media (prefers-reduced-motion: reduce) {
-  .pfc-root {
-    --pfc-revert: 0.3s;
-  }
-  .pfc-scale {
-    transition: none;
-  }
-}
-
-/* Compact Variante (kleinerer Cube) */
-.pfc-root.pfc-compact {
-  --pfc-base: 420px;
-}
-
-/* Hoher Kontrast Variante */
-.pfc-root.pfc-contrast .pfc-col > span {
-  filter: brightness(1);
-  box-shadow:
-    0 4px 18px -4px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(0,0,0,0.4) inset;
-}
-
-/* Statischer Farbmodus (immer farbig ohne Hover) */
-.pfc-root.pfc-static .pfc-col > span {
-  background: var(--hover-color);
-}
-.pfc-root.pfc-static .pfc-col > span::before {
-  background: var(--hover-color-light);
-}
-.pfc-root.pfc-static .pfc-col > span::after {
-  background: var(--hover-color-lighter);
-}
-
-/* Sehr schmale Screens – optional */
-@media (max-width: 380px) {
-  .pfc-root {
-    --pfc-base: 420px;
-  }
-  .pfc-col > span {
-    width: 44px;
-    height: 44px;
-  }
-}
-
-/* Dark Mode leichte Anpassungen (wenn globale .dark vorhanden) */
-.dark .pfc-col > span {
-  filter: brightness(1.05);
-  box-shadow:
-    0 4px 14px -2px rgba(0,0,0,0.5),
-    0 2px 6px -1px rgba(0,0,0,0.6),
-    0 0 0 1px rgba(255,255,255,0.05) inset;
 }
