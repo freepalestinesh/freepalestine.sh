@@ -3,8 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
+// Falls du globale mobile Styles zentral einbindest, lass das hier.
+// Sonst kannst du diesen Import entfernen oder in main.tsx legen:
 import "../global-mobile.css";
-
 
 export default function Index() {
   const { lang = "en" } = useParams();
@@ -38,8 +39,9 @@ export default function Index() {
           {t("site.tagline")}
         </p>
 
-        <div className="mt-10 md:mt-32 flex justify-center px-2">
-            <FlagCube />
+        <div className="mt-12 md:mt-32 flex justify-center">
+          {/* FlagCube Root */}
+          <FlagCube />
         </div>
       </section>
 
