@@ -1,109 +1,42 @@
-import React, {
-  useEffect,
-  useState,
-  useLayoutEffect,
-  useRef,
-  useCallback,
-} from "react";
-import { Link, useParams } from "react-router-dom";
-import FlagCube from "../components/FlagCube";
-import { getAllPosts, Post as PostType } from "@/lib/posts";
-import { useI18n } from "@/i18n";
-import "../global-mobile.css";
+import React, { useEffect, useState, useRef } from "react";
+// ... deine restlichen Imports
 
 export default function Index() {
-  const { lang = "en" } = useParams();
-  const { t, formatDate } = useI18n();
-  const [postsData, setPostsData] = useState<PostType[]>([]);
-
-  useEffect(() => {
-    getAllPosts(lang).then(setPostsData);
-  }, [lang]);
-
-  const first = postsData[0];
-
-  // Refs für exakte Zentrierung
-  const taglineRef = useRef<HTMLParagraphElement | null>(null);
-  const cubeWrapperRef = useRef<HTMLDivElement | null>(null);
+  // ... dein bisheriger Code
+  const tagRef = useRef<HTMLParagraphElement | null>(null);
+  const cubeRef = useRef<HTMLDivElement | null>(null);
   const firstArticleRef = useRef<HTMLElement | null>(null);
-
-  const [margins, setMargins] = useState<{ mt: number; mb: number }>({
-    mt: 72, // Fallback Startwerte (visuell ok)
-    mb: 48,
-  });
-
-  const recompute = useCallback(() => {
-    const tl = taglineRef.current;
-    const cw = cubeWrapperRef.current;
-    const art = firstArticleRef.current;
-    if (!tl || !cw || !art) return;
-
-    // Alle aktuellen Margins kurz auf 0 setzen, um echte Roh-Distanz zu messen.
-    cw.style.marginTop = "0px";
-    cw.style.marginBottom = "0px";
-
-    const tagRect = tl.getBoundingClientRect();
-    const cubeRect = cw.getBoundingClientRect();
-    const artRect = art.getBoundingClientRect();
-
-    // Gesamtraum zwischen Tagline und Artikel-Top:
-    const totalSpace = artRect.top - tagRect.bottom;
-
-    // Cube-Höhe abziehen für Rest-Raum:
-    const free = totalSpace - cubeRect.height;
-
-    // Falls negativer/zu kleiner Raum → kein freier Platz (kleine Displays)
-    const usable = Math.max(free, 0);
-
-    // Reine mathematische Mitte:
-    let top = usable / 2;
-    let bottom = usable / 2;
-
-    // Grenzen setzen (subjektiv angenehme Limits):
-    // Mindestwerte, damit er nicht “klebt”
-    top = Math.max(top, 56); // min 3.5rem
-    bottom = Math.max(bottom, 40); // min 2.5rem
-
-    // Obergrenzen, damit kein Loch entsteht
-    top = Math.min(top, 220);
-    bottom = Math.min(bottom, 160);
-
-    // Leichter optischer Shift: Mensch nimmt oberen Abstand kleiner wahr.
-    // deshalb +8px auf top wenn größerer Raum.
-    if (usable > 120) {
-      top += 8;
-    }
-
-    setMargins({ mt: Math.round(top), mb: Math.round(bottom) });
-  }, []);
-
-  // useLayoutEffect für keinen Layout-Flash
-  useLayoutEffect(() => {
-    recompute();
-  }, [recompute, postsData.length, first?.slug]);
+  const [dynamicMargins, setDynamicMargins] = useState<{mt:number; mb:number}>({ mt: 0, mb: 0 });
 
   useEffect(() => {
-    // Resize + Font loading / dynamic content
-    const onResize = () => recompute();
-    window.addEventListener("resize", onResize);
-    const id = setTimeout(recompute, 60); // kleine Nachmessung nach evtl. Font Render
-    return () => {
-      window.removeEventListener("resize", onResize);
-      clearTimeout(id);
-    };
-  }, [recompute]);
+    function recompute() {
+      if (!tagRef.current || !cubeRef.current || !firstArticleRef.current) return;
+      const tagRect = tagRef.current.getBoundingClientRect();
+      const artRect = firstArticleRef.current.getBoundingClientRect();
+      const cubeRect = cubeRef.current.getBoundingClientRect();
 
-  const firstParagraphHTML = (() => {
-    if (!first) return "";
-    const html = first.html || "";
-    if (html.includes("</p>")) {
-      const p = html.split(/<\/p>/i)[0];
-      return p.endsWith("</p>") ? p : p + "</p>";
+      // Freier Raum, den wir aufteilen wollen:
+      // Abstand von Tagline-Bottom bis Article-Top minus Cube-Höhe
+      const gap = artRect.top - tagRect.bottom - cubeRect.height;
+
+      // Sicherheitskappen & Mindestwerte
+      const cleanGap = Math.max(gap, 40); // nie negativ
+      let top = cleanGap / 2;
+      let bottom = cleanGap / 2;
+
+      // Mindest / Max Grenzen (visuell)
+      top = Math.min(Math.max(top, 64), 220);
+      bottom = Math.min(Math.max(bottom, 32), 160);
+
+      setDynamicMargins({ mt: top, mb: bottom });
     }
-    const raw = first.excerpt || html;
-    return `<p>${raw.substring(0, 320)}${raw.length > 320 ? "…" : ""}</p>`;
-  })();
 
+    recompute();
+    window.addEventListener("resize", recompute);
+    return () => window.removeEventListener("resize", recompute);
+  }, [postsData.length]);
+
+  // Dann im JSX:
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
       <section className="mb-0 flex flex-col">
@@ -112,23 +45,21 @@ export default function Index() {
             {t("site.title") || "freepalestine.sh"}
           </h1>
           <p
-            ref={taglineRef}
+            ref={tagRef}
             className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose"
           >
             {t("site.tagline")}
           </p>
         </header>
 
-        {/* Dynamisch exakt zentrierter Cube */}
         <div
-            ref={cubeWrapperRef}
-            style={{
-              marginTop: margins.mt,
-              marginBottom: margins.mb,
-              transition: "margin 180ms ease",
-              display: "flex",
-              justifyContent: "center",
-            }}
+          ref={cubeRef}
+          style={{
+            marginTop: `${dynamicMargins.mt}px`,
+            marginBottom: `${dynamicMargins.mb}px`,
+            transition: "margin 220ms ease"
+          }}
+          className="self-center"
         >
           <FlagCube />
         </div>
@@ -138,83 +69,11 @@ export default function Index() {
             ref={firstArticleRef}
             className="relative z-10 pb-8 md:pb-10 border-b"
           >
-            <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-              <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
-                <Link
-                  to={`/${lang}/post/${first.slug}`}
-                  className="underline decoration-transparent hover:decoration-current"
-                >
-                  {first.title}
-                </Link>
-              </h2>
-              <time className="text-xs md:text-sm text-muted-foreground">
-                {formatDate(first.date || "")}
-              </time>
-            </header>
-            <div
-              className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
-              dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
-            />
-            <div className="mt-4">
-              <Link
-                to={`/${lang}/post/${first.slug}`}
-                className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
-              >
-                {t("post.readFull") || "Read full article →"}
-              </Link>
-            </div>
-            {first.tags?.length ? (
-              <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
-                {first.tags.map((tg) => (
-                  <li
-                    key={tg}
-                    className="rounded border px-2 py-0.5 text-muted-foreground"
-                  >
-                    #{tg}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            {/* ... Rest unverändert */}
           </article>
         )}
       </section>
-
-      {postsData.slice(1).map((post) => (
-        <article
-          key={post.slug}
-          className="py-8 md:py-10 border-b last:border-b-0"
-        >
-          <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-            <h2 className="not-prose text-lg md:text-xl font-semibold leading-snug">
-              <Link
-                to={`/${lang}/post/${post.slug}`}
-                className="underline decoration-transparent hover:decoration-current"
-              >
-                {post.title}
-              </Link>
-            </h2>
-            <time className="text-xs md:text-sm text-muted-foreground">
-              {formatDate(post.date || "")}
-            </time>
-          </header>
-          <div
-            className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
-            dangerouslySetInnerHTML={{ __html: post.excerpt || "" }}
-          />
-          {post.tags?.length ? (
-            <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
-              {post.tags.map((tg) => (
-                <li
-                  key={tg}
-                  className="rounded border px-2 py-0.5 text-muted-foreground"
-                >
-                  #{tg}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </article>
-      ))}
+      {/* Restliche Posts ... */}
     </div>
   );
 }
