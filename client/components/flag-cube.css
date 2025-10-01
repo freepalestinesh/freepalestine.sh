@@ -1,171 +1,142 @@
-/* Responsive animated cube / block cluster (Palestine flag colors) */
+/* ==== FlagCube (kompakte Variante) =========================================
+   - Keine globalen body / * Resets
+   - Reines Scoping unter .flag-cube-frame / .flag-cube-grid
+   ========================================================================= */
 
-.flag-cube-shell {
-  --cube-size: 90px;
-  max-width: 320px;
-  width: min(80vw, 320px);
-  height: calc(var(--cube-size) * 2.4);
-  margin: 0 auto;
+.flag-cube-frame {
+  --fc-size: 320px;
+  --fc-gap: 18px;
+  --fc-anim-duration: 18s;
+  width: var(--fc-size);
+  max-width: 80vw;
+  aspect-ratio: 1 / 1;
   position: relative;
+  margin: 0 auto;
   perspective: 1400px;
   perspective-origin: 50% 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* leichte Gesamtdrehung für pseudo-3D */
+  transform: translateZ(0);
 }
 
-@media (min-width: 480px) {
-  .flag-cube-shell {
-    --cube-size: 110px;
-    height: calc(var(--cube-size) * 2.3);
-  }
-}
-@media (min-width: 768px) {
-  .flag-cube-shell {
-    --cube-size: 140px;
-    height: calc(var(--cube-size) * 2.2);
+@media (max-width: 480px) {
+  .flag-cube-frame {
+    --fc-size: 260px;
+    --fc-gap: 14px;
   }
 }
 
-.flag-cube-wrapper {
-  position: relative;
+.flag-cube-grid {
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  animation: fcOrbit 18s linear infinite;
-  will-change: transform;
-}
-
-@keyframes fcOrbit {
-  0% { transform: rotateX(18deg) rotateY(0deg); }
-  50% { transform: rotateX(18deg) rotateY(180deg); }
-  100% { transform: rotateX(18deg) rotateY(360deg); }
-}
-
-.flag-cube-wrapper .cube {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  animation: fcFloat 6s ease-in-out infinite;
-}
-
-.flag-cube-wrapper .cube:nth-child(2) { animation-delay: 0.6s; }
-.flag-cube-wrapper .cube:nth-child(3) { animation-delay: 1.2s; }
-
-@keyframes fcFloat {
-  0%, 100% { transform: translate(-50%, -50%) translateY(-6px); }
-  50% { transform: translate(-50%, -50%) translateY(6px); }
-}
-
-.flag-cube-wrapper .cube > div {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--cube-size) * 0.08);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--fc-gap);
+  padding: var(--fc-gap);
+  box-sizing: border-box;
   transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  transform: translate3d(calc(var(--x) * var(--cube-size) * 0.55), 0, 0);
+  animation: fcRotate var(--fc-anim-duration) linear infinite;
 }
 
-.flag-cube-wrapper .cube > div span {
-  --depth: calc(var(--cube-size) * 0.6);
-  width: calc(var(--cube-size) * 0.6);
-  height: calc(var(--cube-size) * 0.6);
+@media (prefers-reduced-motion: reduce) {
+  .flag-cube-grid {
+    animation: none;
+    transform: rotateX(14deg) rotateY(25deg);
+  }
+}
+
+@keyframes fcRotate {
+  0%   { transform: rotateX(14deg) rotateY(0deg); }
+  50%  { transform: rotateX(14deg) rotateY(180deg); }
+  100% { transform: rotateX(14deg) rotateY(360deg); }
+}
+
+.flag-cube-grid span {
+  --cell-bg: #f5f5f5;
+  --cell-edge: rgba(0,0,0,0.15);
+  --cell-highlight: rgba(255,255,255,0.65);
   position: relative;
-  border-radius: 6px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--cell-bg);
   box-shadow:
     0 4px 10px -2px rgba(0,0,0,0.25),
     0 2px 4px -1px rgba(0,0,0,0.25),
-    0 0 0 1px rgba(0,0,0,0.05) inset;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  animation: fcPulse 3.2s ease-in-out infinite;
-  animation-delay: calc(var(--i) * -0.35s);
+    0 0 0 1px rgba(0,0,0,0.05) inset,
+    0 0 0 1px rgba(255,255,255,0.3);
   overflow: hidden;
+  transform: translateZ(0);
+  transition: transform .6s cubic-bezier(.25,.6,.3,1), filter .6s;
+  will-change: transform;
 }
 
-@keyframes fcPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.25); }
+/* Farblogik je Reihe (Abstraktion: Rot – Weiß – Grün; Schwarz optional als Outline) */
+.flag-cube-grid span[data-row="0"] {
+  background: linear-gradient(145deg,#c91515,#f24b4b);
+}
+.flag-cube-grid span[data-row="1"] {
+  background: linear-gradient(145deg,#ffffff,#dcdcdc);
+}
+.flag-cube-grid span[data-row="2"] {
+  background: linear-gradient(145deg,#128a39,#22c655);
 }
 
-/* Color rows: top red, middle white/gray, bottom green */
-.flag-cube-wrapper .cube > div span:nth-child(1) {
-  background: linear-gradient(145deg,#c31e1e,#ff4d4d);
-}
-.flag-cube-wrapper .cube > div span:nth-child(2) {
-  background: linear-gradient(145deg,#ffffff,#d9d9d9);
-}
-.flag-cube-wrapper .cube > div span:nth-child(3) {
-  background: linear-gradient(145deg,#118c3a,#25c95a);
+/* Subtile diagonale Variation pro Spalte */
+.flag-cube-grid span[data-col="0"] { filter: brightness(0.92); }
+.flag-cube-grid span[data-col="1"] { filter: brightness(1); }
+.flag-cube-grid span[data-col="2"] { filter: brightness(1.05); }
+
+.flag-cube-grid span::before,
+.flag-cube-grid span::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
 }
 
-/* Light/shade overlays */
-.flag-cube-wrapper .cube > div span::after,
-.flag-cube-wrapper .cube > div span::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+.flag-cube-grid span::before {
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), transparent 70%);
+  opacity: .55;
 }
-.flag-cube-wrapper .cube > div span::after {
-  background: linear-gradient(225deg, rgba(0,0,0,0.25), transparent 60%);
-  mix-blend-mode: multiply;
-  opacity: 0.35;
-}
-.flag-cube-wrapper .cube > div span::before {
-  background: linear-gradient(45deg, rgba(255,255,255,0.75), transparent 70%);
-  opacity: 0.4;
+.flag-cube-grid span::after {
+  background: linear-gradient(125deg, rgba(0,0,0,0.35), transparent 55%);
+  opacity: .25;
 }
 
-/* Small screen tweaks */
-@media (max-width: 420px) {
-  .flag-cube-shell {
-    --cube-size: 82px;
+/* Hover / Fokus (Desktop) */
+@media (hover: hover) {
+  .flag-cube-grid span:hover {
+    transform: translateZ(18px) scale(1.04);
+    filter: brightness(1.15);
   }
-  .flag-cube-wrapper { animation-duration: 24s; }
-  .flag-cube-wrapper .cube { animation-duration: 7s; }
 }
 
-/* Reduced motion accessibility */
+/* Leichter Puls (abschaltbar via prefers-reduced-motion) */
+.flag-cube-grid span {
+  animation: fcCellPulse 4.4s ease-in-out infinite;
+  animation-delay: calc((var(--row-offset,0) + var(--col-offset,0)) * -0.35s);
+}
+@keyframes fcCellPulse {
+  0%,100% { box-shadow:
+    0 4px 10px -2px rgba(0,0,0,0.25),
+    0 2px 4px -1px rgba(0,0,0,0.25),
+    0 0 0 1px rgba(0,0,0,0.05) inset,
+    0 0 0 1px rgba(255,255,255,0.3);
+  }
+  50% { box-shadow:
+    0 6px 16px -2px rgba(0,0,0,0.35),
+    0 3px 6px -1px rgba(0,0,0,0.28),
+    0 0 0 1px rgba(0,0,0,0.08) inset,
+    0 0 0 1px rgba(255,255,255,0.4);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .flag-cube-wrapper,
-  .flag-cube-wrapper .cube,
-  .flag-cube-wrapper .cube > div span {
-    animation: none !important;
-  }
-}
-
-/* Safari / iOS stability */
-.flag-cube-shell,
-.flag-cube-wrapper,
-.flag-cube-wrapper .cube,
-.flag-cube-wrapper .cube > div,
-.flag-cube-wrapper .cube > div span {
-  -webkit-backface-visibility: hidden;
-}
-
-.flag-cube-fallback-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(3rem, 20vw, 6rem);
-  color: rgba(0,0,0,0.06);
-  pointer-events: none;
-  user-select: none;
-}
-
-/* JS disabled / error fallback (optional hook classes) */
-.no-js .flag-cube-wrapper,
-.flag-cube-error .flag-cube-wrapper {
-  display: none;
-}
-.no-js .flag-cube-fallback-text,
-.flag-cube-error .flag-cube-fallback-text {
-  display: flex;
+  .flag-cube-grid span { animation: none; }
 }
