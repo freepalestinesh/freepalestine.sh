@@ -106,15 +106,14 @@ export default function Index() {
 
         <div
           ref={cubeWrapperRef}
-            style={{
-              marginTop: margins.mt,
-              marginBottom: margins.mb,
-              transition: "margin 180ms ease",
-              display: "flex",
-              justifyContent: "center",
-            }}
+          style={{
+            marginTop: margins.mt,
+            marginBottom: margins.mb,
+            transition: "margin 180ms ease",
+          }}
+          className="mx-auto w-fit flex justify-center"
         >
-          <FlagCube />
+            <FlagCube />
         </div>
 
         {first && (
