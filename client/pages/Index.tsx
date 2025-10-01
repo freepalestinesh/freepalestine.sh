@@ -1,90 +1,27 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import FlagCube from "../components/FlagCube";
+import FlagCube from "../components/FlagCube"; // Re-export der stabilen PalestineFlagCubeStable-Komponente
 import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
 import "../global-mobile.css";
 
-const MIN_TOP = 80;
-const MIN_BOTTOM = 48;
-const DEPTH_BIAS = 0.62; // >0.5 = tiefer
-const MAX_TOP = 260;
-const MAX_BOTTOM = 200;
+/**
+ * Statische, stabile Index-Version (Schritt 5):
+ * - Kein dynamisches Re-Messen mehr
+ * - Fester vertikaler Abstand für den Cube
+ * - Der Cube skaliert intern selbst (mode=stepped / minScale) ohne Layout-Jumps
+ */
 
 export default function Index() {
   const { lang = "en" } = useParams();
   const { t, formatDate } = useI18n();
   const [postsData, setPostsData] = useState<PostType[]>([]);
-  useEffect(() => { getAllPosts(lang).then(setPostsData); }, [lang]);
-
-  const first = postsData[0];
-
-  const taglineRef = useRef<HTMLParagraphElement | null>(null);
-  const cubeWrapRef = useRef<HTMLDivElement | null>(null);
-  const articleRef = useRef<HTMLElement | null>(null);
-
-  const [margins, setMargins] = useState({ mt: 160, mb: 64 });
-
-  const recompute = useCallback(() => {
-    const tl = taglineRef.current;
-    const cw = cubeWrapRef.current;
-    const art = articleRef.current;
-    if (!tl || !cw || !art) return;
-
-    // Temporär neutralisieren
-    const prevT = cw.style.marginTop;
-    const prevB = cw.style.marginBottom;
-    cw.style.marginTop = "0px";
-    cw.style.marginBottom = "0px";
-
-    const tagRect = tl.getBoundingClientRect();
-    const cubeRect = cw.getBoundingClientRect();
-    const artRect = art.getBoundingClientRect();
-
-    const total = artRect.top - tagRect.bottom;
-    const free = total - cubeRect.height;
-    const usable = Math.max(free, 0);
-
-    let top = usable * DEPTH_BIAS;
-    let bottom = usable - top;
-
-    top = Math.max(MIN_TOP, Math.min(top, MAX_TOP));
-    bottom = Math.max(MIN_BOTTOM, Math.min(bottom, MAX_BOTTOM));
-
-    if (top + bottom > usable && usable > 0) {
-      // Rebalance falls clamps zu groß
-      const scale = usable / (top + bottom);
-      top = Math.round(top * scale);
-      bottom = Math.round(bottom * scale);
-    }
-
-    setMargins({ mt: Math.round(top), mb: Math.round(bottom) });
-
-    // Restore (Transition greift erst beim Re-Render)
-    cw.style.marginTop = prevT;
-    cw.style.marginBottom = prevB;
-  }, []);
-
-  // Initial & re-run bei Content/Größenwechsel
-  useLayoutEffect(() => {
-    recompute();
-  }, [recompute, postsData.length, first?.slug]);
 
   useEffect(() => {
-    const onResize = () => recompute();
-    window.addEventListener("resize", onResize);
-    const fontTimeout = setTimeout(recompute, 120);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      clearTimeout(fontTimeout);
-    };
-  }, [recompute]);
+    getAllPosts(lang).then(setPostsData);
+  }, [lang]);
+
+  const first = postsData[0];
 
   const firstParagraphHTML = (() => {
     if (!first) return "";
@@ -104,31 +41,30 @@ export default function Index() {
           <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
             {t("site.title") || "freepalestine.sh"}
           </h1>
-          <p
-            ref={taglineRef}
-            className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose"
-          >
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
             {t("site.tagline")}
           </p>
         </header>
 
+        {/* Statisch platzierter Cube */}
         <div
-          ref={cubeWrapRef}
-            style={{
-              marginTop: `${margins.mt}px`,
-              marginBottom: `${margins.mb}px`,
-              transition: "margin 220ms ease",
-            }}
-            className="w-full flex justify-center"
+          className="w-full flex justify-center"
+          style={{
+            marginTop: 180,   // Bei Bedarf anpassen (z.B. 160 / 200)
+            marginBottom: 72, // Abstand oberhalb des ersten Artikels
+          }}
         >
-          <FlagCube />
+          <FlagCube
+            mode="stepped"        // "stepped" | "fluid" | "none"
+            minScale={0.55}       // Untergrenze (kleine Screens)
+            revertDurationSec={6} // Fade-out Dauer nach Hover
+            // disableHover          // Optional aktivieren, falls keine Interaktion gewünscht
+            ariaLabel="Interactive isometric cube stack"
+          />
         </div>
 
         {first && (
-          <article
-            ref={articleRef}
-            className="relative z-10 pb-8 md:pb-10 border-b max-w-prose"
-          >
+          <article className="relative z-10 pb-8 md:pb-10 border-b max-w-prose">
             <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
                 <Link
