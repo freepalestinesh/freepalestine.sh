@@ -1,0 +1,9 @@
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 480px) {
+  p, li {
+    word-break: break-word;
+  }
+}
