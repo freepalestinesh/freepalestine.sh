@@ -38,11 +38,9 @@ export default function Index() {
         </p>
       </section>
 
-      {/* Cube an neuer Position (X) */}
-      <div className="flex justify-center mb-8 md:mb-12">
-        <div className="flag-cube-hero-scale">
-          <FlagCube />
-        </div>
+      {/* Cube weiter runter (oben mehr Luft), darunter einheitlicher Abstand */}
+      <div className="flex justify-center mt-10 md:mt-16 mb-12 md:mb-16">
+        <FlagCube />
       </div>
 
       {first && (
@@ -64,14 +62,14 @@ export default function Index() {
             className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
             dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
           />
-            <div className="mt-4">
-              <Link
-                to={`/${lang}/post/${first.slug}`}
-                className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
-              >
-                {t("post.readFull") || "Read full article →"}
-              </Link>
-            </div>
+          <div className="mt-4">
+            <Link
+              to={`/${lang}/post/${first.slug}`}
+              className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
+            >
+              {t("post.readFull") || "Read full article →"}
+            </Link>
+          </div>
           {first.tags?.length ? (
             <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
               {first.tags.map((tg) => (
@@ -87,7 +85,6 @@ export default function Index() {
         </article>
       )}
 
-      {/* Restliche Posts (falls du weitere rendern willst – bestehende Logik ggf. ergänzen) */}
       {postsData.slice(1).map((post) => (
         <article
           key={post.slug}
