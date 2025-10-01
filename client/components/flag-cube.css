@@ -1,38 +1,52 @@
 /* ==========================================================================
-   FLAG CUBE – Zentrierung + einstellbarer Horizontal-Shift
+   FLAG CUBE – zentriert + gesteuerter Horizontal-/Vertikal-Shift
+   Ziel: Identische Geometrie, nur Verschieben + Nähe zum Artikel
    ========================================================================== */
 
 .flag-cube-root {
+  /* Basisgröße der unskalierten Szene */
   --base-width: 520px;
+  /* Skalierung (wie gehabt) */
   --scale: clamp(0.55, (100vw - 4rem) / var(--base-width), 1);
 
-  /* Feinjustierung: */
-  --y-offset: -10px;              /* leicht hoch / runter (negativ = höher) */
-  --x-shift-mobile: 0px;          /* horizontaler Shift auf kleinen Screens */
-  --x-shift-desktop: 120px;       /* Hauptverschiebung nach rechts (unter das 's') */
+  /* Feintuning: */
+  --x-shift-mobile: 32px;        /* kleiner Rechts-Shift auf sehr kleinen Screens */
+  --x-shift-desktop: 140px;      /* Hauptverschiebung ab 900px */
+  --x-shift-ultra: 155px;        /* optional: noch etwas weiter rechts ab 1280px */
+  --y-offset: -6px;              /* Feintuning vertikal (negativ = höher) */
+  --cube-bottom-gap: 0.75rem;    /* Abstand zum Artikel darunter */
+  --top-adjust: -38px;           /* ursprünglicher container top-Offset (war -40 / -70) */
 
   width: 100%;
   display: flex;
   justify-content: center;
   position: relative;
   margin: 0 auto;
-  margin-bottom: 1.2rem;          /* Abstand zum Artikel darunter (anpassbar) */
+  margin-bottom: var(--cube-bottom-gap);
   pointer-events: none;
 }
 
-/* Ab welcher Breite der Desktop-Shift gelten soll */
+/* Zusammenführen finaler horizontaler Verschiebung in eine Variable */
+.flag-cube-root {
+  --x-shift-final: var(--x-shift-mobile);
+}
+
 @media (min-width: 900px) {
   .flag-cube-root {
-    /* Falls zu weit rechts: kleiner machen (z.B. 90px). Falls nicht weit genug: erhöhen (140px). */
-    --x-shift-mobile: var(--x-shift-desktop);
+    --x-shift-final: var(--x-shift-desktop);
+  }
+}
+
+@media (min-width: 1280px) {
+  .flag-cube-root {
+    --x-shift-final: var(--x-shift-ultra);
   }
 }
 
 .flag-cube-scale {
   width: var(--base-width);
   height: var(--base-width);
-  /* Reihenfolge: erst verschieben, dann skalieren (so bleibt der visuelle Abstand konsistent) */
-  transform: translate(var(--x-shift-mobile), var(--y-offset)) scale(var(--scale));
+  transform: translate(var(--x-shift-final), var(--y-offset)) scale(var(--scale));
   transform-origin: top center;
   position: relative;
   pointer-events: none;
@@ -41,21 +55,23 @@
 /* Ursprüngliche Szene */
 .flag-cube-scale .container {
   position: relative;
-  top: -40px;                     /* war -50/-70 – kleiner für mehr Nähe zu 'Goals' */
+  top: var(--top-adjust);
   transform: skewY(-20deg);
   pointer-events: none;
 }
 
-/* Drei Layer */
+/* Drei Layer (versetzt) */
 .flag-cube-scale .container .cube {
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
+
 .flag-cube-scale .container .cube:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
+
 .flag-cube-scale .container .cube:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
@@ -112,6 +128,7 @@
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
 }
+
 .flag-cube-scale .container .cube > div > span::after {
   top: -40px;
   left: 0;
@@ -130,7 +147,7 @@
 .flag-cube-scale .container .cube > div:nth-child(3) > span { --cube-color: #007a3d; }
 .flag-cube-scale .container .cube > div > span:first-child { --cube-color: #ce1126; }
 
-/* Interaktionen */
+/* Interaktionen Desktop */
 @media (hover:hover) {
   .flag-cube-scale .container .cube > div > span:hover {
     transition-duration: 0s;
@@ -144,6 +161,7 @@
   }
 }
 
+/* Touch (Tap) */
 @media (hover:none) {
   .flag-cube-scale .container .cube > div > span:active {
     transition-duration: 0s;
