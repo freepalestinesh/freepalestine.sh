@@ -1,57 +1,57 @@
-/* Scaled Original Cube – identische Desktop-Geometrie, proportional verkleinert auf Mobile */
+/* Prefixed Original Cube – kollisionsfrei */
 
-/* ROOT: reserviert vertikalen Platz und definiert Skalierung */
-.flag-cube-root {
-  /* Desktop-Basisbreite: 520px (ergibt genügend Platz für 3 Layer + Offsets) */
+/* Basisbreite + responsive Skalierung */
+.fc-root {
   --base-width: 520px;
-  /* Skaliert zwischen 55% und 100%, abhängig von verfügbarem Platz */
   --scale: clamp(0.55, (100vw - 2rem) / var(--base-width), 1);
   width: 100%;
   max-width: var(--base-width);
-  height: calc(var(--base-width) * var(--scale)); /* reservierter Raum */
+  height: calc(var(--base-width) * var(--scale));
   position: relative;
   margin: 0 auto;
-  /* Optional: leichtes smoothing */
   -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
+  line-height: 0;
 }
 
-/* Der eigentliche ursprüngliche Aufbau wird einfach skaliert, Geometrie bleibt fix. */
-.flag-cube-scale {
+/* Skaliert gesamte Szene */
+.fc-scale {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: var(--base-width);
   height: var(--base-width);
   transform: scale(var(--scale));
   transform-origin: top left;
-  pointer-events: none; /* Interaktion erst wieder bei den Tiles aktivieren */
+  pointer-events: none;
 }
 
-/* Original-Konstanten (nicht ändern für 1:1 Look) */
-.flag-cube-scale .container {
+/* Skew / Projektionscontainer */
+.fc-container {
   position: relative;
   top: -80px;
   transform: skewY(-20deg);
   pointer-events: none;
 }
 
-/* Layer */
-.flag-cube-scale .container .cube {
+/* Layer (3 Stück) – Offsets über nth-child */
+.fc-layer {
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
-.flag-cube-scale .container .cube:nth-child(2) {
+
+.fc-layer:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
-.flag-cube-scale .container .cube:nth-child(3) {
+
+.fc-layer:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
 }
 
-/* Spalten: feste Übersetzungen wie im Original */
-.flag-cube-scale .container .cube > div {
+/* Spalten pro Layer */
+.fc-layer > div {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -60,8 +60,8 @@
   pointer-events: none;
 }
 
-/* Tiles */
-.flag-cube-scale .container .cube > div > span {
+/* Einzelner Würfel */
+.fc-layer > div > span {
   position: relative;
   display: inline-block;
   width: 50px;
@@ -76,10 +76,9 @@
   background: var(--flag-color);
 
   transition-property: background, filter;
-  transition-duration: 6s; /* var(--REVERT_DURATION) fest: 6s */
+  transition-duration: 6s;
   transition-timing-function: ease;
 
-  overflow: visible;
   border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
@@ -88,18 +87,16 @@
   filter: brightness(0.97);
 }
 
-/* Pseudo-Kanten */
-.flag-cube-scale .container .cube > div > span::before,
-.flag-cube-scale .container .cube > div > span::after {
+/* Kanten */
+.fc-layer > div > span::before,
+.fc-layer > div > span::after {
   content: "";
   position: absolute;
-  transition-property: background;
-  transition-duration: 6s;
-  transition-timing-function: ease;
+  transition: background 6s ease;
   border-radius: 6px;
 }
 
-.flag-cube-scale .container .cube > div > span::before {
+.fc-layer > div > span::before {
   left: -40px;
   width: 40px;
   height: 100%;
@@ -109,7 +106,8 @@
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
 }
-.flag-cube-scale .container .cube > div > span::after {
+
+.fc-layer > div > span::after {
   top: -40px;
   left: 0;
   width: 100%;
@@ -121,49 +119,51 @@
   border-top-left-radius: 8px;
 }
 
-/* Hover Desktop */
-@media (hover:hover) {
-  .flag-cube-scale .container .cube > div > span:hover {
-    transition-duration: 0s;
-    background: var(--hover-color);
-    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
-  }
-  .flag-cube-scale .container .cube > div > span:hover::before,
-  .flag-cube-scale .container .cube > div > span:hover::after {
-    transition-duration: 0s;
-    background: var(--hover-color-light);
-  }
-}
-
-/* Touch (Tap) */
-@media (hover:none) {
-  .flag-cube-scale .container .cube > div > span:active {
-    transition-duration: 0s;
-    background: var(--hover-color);
-    filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
-  }
-}
-
-/* Farb-Zuordnung Reihen */
-.flag-cube-scale .container .cube > div:nth-child(1) > span {
+/* Farbzuweisungen nach Spalten (Layer-übergreifend) */
+.fc-layer > div:nth-child(1) > span {
   --hover-color: #000000;
   --hover-color-light: #2d2d2d;
   --hover-color-lighter: #4f4f4f;
 }
-.flag-cube-scale .container .cube > div:nth-child(2) > span {
+
+.fc-layer > div:nth-child(2) > span {
   --hover-color: #ffffff;
   --hover-color-light: #f2f2f2;
   --hover-color-lighter: #e6e6e6;
 }
-.flag-cube-scale .container .cube > div:nth-child(3) > span {
+
+.fc-layer > div:nth-child(3) > span {
   --hover-color: #007a3d;
   --hover-color-light: #00994d;
   --hover-color-lighter: #33aa66;
 }
 
-/* Linkes Dreieck (erstes span jeder Spalte) */
-.flag-cube-scale .container .cube > div > span:first-child {
+/* Linkes Diagonal-Dreieck – erstes span pro Spalte */
+.fc-layer > div > span:first-child {
   --hover-color: #ce1126;
   --hover-color-light: #e63946;
   --hover-color-lighter: #f06263;
+}
+
+/* Hover / Desktop */
+@media (hover:hover) {
+  .fc-layer > div > span:hover {
+    transition-duration: 0s;
+    background: var(--hover-color);
+    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
+  }
+  .fc-layer > div > span:hover::before,
+  .fc-layer > div > span:hover::after {
+    transition-duration: 0s;
+    background: var(--hover-color-light);
+  }
+}
+
+/* Touch */
+@media (hover:none) {
+  .fc-layer > div > span:active {
+    transition-duration: 0s;
+    background: var(--hover-color);
+    filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
+  }
 }
