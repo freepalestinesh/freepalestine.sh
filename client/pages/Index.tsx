@@ -29,62 +29,71 @@ export default function Index() {
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
-      <section className="mb-4 md:mb-6">
-        <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
-          {t("site.title") || "freepalestine.sh"}
-        </h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
-          {t("site.tagline")}
-        </p>
-      </section>
+      {/* Hero-Bereich: Titel -> Tagline -> Cube -> erster Artikel */}
+      <section className="mb-0">
+        <header>
+          <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
+            {t("site.title") || "freepalestine.sh"}
+          </h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
+            {t("site.tagline")}
+          </p>
+        </header>
 
-      {/* Cube weiter runter (oben mehr Luft), darunter einheitlicher Abstand */}
-      <div className="flex justify-center mt-10 md:mt-16 mb-12 md:mb-16">
-        <FlagCube />
-      </div>
+        {/* Cube block: symmetrischer Abstand per clamp für Mobile & Desktop */}
+        <div
+          className="
+            cube-hero flex justify-center
+            my-[clamp(2.75rem,8vh,4.25rem)]
+          "
+        >
+          <FlagCube />
+        </div>
 
-      {first && (
-        <article className="relative z-10 pb-8 md:pb-10 border-b">
-          <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-            <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
+        {first && (
+          <article className="relative z-10 pb-8 md:pb-10 border-b">
+            <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+              <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
+                <Link
+                  to={`/${lang}/post/${first.slug}`}
+                  className="underline decoration-transparent hover:decoration-current"
+                >
+                  {first.title}
+                </Link>
+              </h2>
+              <time className="text-xs md:text-sm text-muted-foreground">
+                {formatDate(first.date || "")}
+              </time>
+            </header>
+            <div
+              className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
+              dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
+            />
+            <div className="mt-4">
               <Link
                 to={`/${lang}/post/${first.slug}`}
-                className="underline decoration-transparent hover:decoration-current"
+                className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
               >
-                {first.title}
+                {t("post.readFull") || "Read full article →"}
               </Link>
-            </h2>
-            <time className="text-xs md:text-sm text-muted-foreground">
-              {formatDate(first.date || "")}
-            </time>
-          </header>
-          <div
-            className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
-            dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
-          />
-          <div className="mt-4">
-            <Link
-              to={`/${lang}/post/${first.slug}`}
-              className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
-            >
-              {t("post.readFull") || "Read full article →"}
-            </Link>
-          </div>
-          {first.tags?.length ? (
-            <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
-              {first.tags.map((tg) => (
-                <li
-                  key={tg}
-                  className="rounded border px-2 py-0.5 text-muted-foreground"
-                >
-                  #{tg}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </article>
-      )}
+            </div>
+            {first.tags?.length ? (
+              <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
+                {first.tags.map((tg) => (
+                  <li
+                    key={tg}
+                    className="rounded border px-2 py-0.5 text-muted-foreground"
+                  >
+                    #{tg}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </article>
+        )}
+      </section>
 
+      {/* Restliche Posts */}
       {postsData.slice(1).map((post) => (
         <article
           key={post.slug}
