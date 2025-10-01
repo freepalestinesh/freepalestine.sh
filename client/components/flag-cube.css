@@ -1,38 +1,45 @@
-/* ========================================================================== 
-   FLAG CUBE – 1:1 GEOMETRIE (Desktop = Referenz), Mobile reine Skalierung
+/* ==========================================================================
+   FLAG CUBE – zentriert & proportional skaliert
+   - Keine absolute Positionierung mehr
+   - Einheitliche Geometrie Desktop/Mobile
+   - Volle Farbfüllung beim Hover/Active
+   - Justierbare Offsets via Variablen
    ========================================================================== */
 
 .flag-cube-root {
-  --base-width: 520px;              /* Referenz-Breite der unskalierten Szene */
-  --scale: clamp(0.55, (100vw - 2rem) / var(--base-width), 1);
-  position: relative;
-  width: 100%;
-  max-width: var(--base-width);
-  height: calc(var(--base-width) * 0.90 * var(--scale)); /* Reserviert vertikal Raum */
-  margin: 0 auto;
-  pointer-events: none; /* Interaktion nur auf Tiles */
-}
+  --base-width: 520px;             /* Vollgröße (Referenz) */
+  --scale: clamp(0.55, (100vw - 4rem) / var(--base-width), 1);
+  --y-offset: 0px;                 /* Feinjustierung vertikal (positiv = runter) */
+  --fade-duration: 6s;
 
-/* Skaliert die gesamte Original-Szene ohne interne Geometrieveränderung */
-.flag-cube-scale {
-  position: absolute;
-  inset: 0;
-  width: var(--base-width);
-  height: var(--base-width);
-  transform: scale(var(--scale));
-  transform-origin: top left;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin: 0 auto;
+  margin-bottom: 1.5rem;           /* Abstand nach unten Richtung Artikel */
   pointer-events: none;
 }
 
-/* Original-Offsets */
+.flag-cube-scale {
+  width: var(--base-width);
+  height: var(--base-width); /* groß genug für alle Layer */
+  transform: translateY(var(--y-offset)) scale(var(--scale));
+  transform-origin: top center;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Ursprüngliche Szene */
 .flag-cube-scale .container {
   position: relative;
-  top: -70px;            /* Feintuning: -80 war sehr hoch, -70 bessere Balance */
+  /* Statt brutal -80 jetzt moderater; Feintuning via --y-offset oben einstellbar */
+  top: -50px;
   transform: skewY(-20deg);
   pointer-events: none;
 }
 
-/* Layer (3) */
+/* Drei Layer (versetzt) */
 .flag-cube-scale .container .cube {
   position: relative;
   z-index: 2;
@@ -57,9 +64,8 @@
   pointer-events: none;
 }
 
-/* Tiles (Basis neutral) */
+/* Tiles */
 .flag-cube-scale .container .cube > div > span {
-  --fade-duration: 6s;
   position: relative;
   display: inline-block;
   width: 50px;
@@ -67,29 +73,28 @@
   z-index: calc(1 * var(--i));
   cursor: pointer;
   pointer-events: auto;
+
   background: #ffffff;
   border-radius: 9px;
   box-shadow:
-    0 4px 14px -2px rgba(0,0,0,0.18),
-    0 2px 6px -1px rgba(0,0,0,0.25),
+    0 5px 16px -3px rgba(0,0,0,0.22),
+    0 3px 7px -2px rgba(0,0,0,0.28),
     0 0 0 1px rgba(0,0,0,0.05) inset;
   transition: background var(--fade-duration) ease,
               filter var(--fade-duration) ease;
-  filter: brightness(0.97);
-  /* Für saubere Kanten auf Mobile */
+  filter: brightness(0.98);
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+          backface-visibility: hidden;
 }
 
-/* Pseudo-Flächen (Seite/Deckel) */
+/* Seiten- & Topflächen durch pseudo-Elements */
 .flag-cube-scale .container .cube > div > span::before,
 .flag-cube-scale .container .cube > div > span::after {
   content: "";
   position: absolute;
   transition: background var(--fade-duration) ease;
-  border-radius: 6px;
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+          backface-visibility: hidden;
 }
 
 .flag-cube-scale .container .cube > div > span::before {
@@ -102,6 +107,7 @@
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
 }
+
 .flag-cube-scale .container .cube > div > span::after {
   top: -40px;
   left: 0;
@@ -114,12 +120,18 @@
   border-top-left-radius: 8px;
 }
 
-/* HOVER / ACTIVE -> komplette Färbung (Front + Seiten + Top gleichfarbig) */
+/* Farb-Definition (Hover-/Active-Ziel) */
+.flag-cube-scale .container .cube > div:nth-child(1) > span { --cube-color: #000000; }
+.flag-cube-scale .container .cube > div:nth-child(2) > span { --cube-color: #ffffff; }
+.flag-cube-scale .container .cube > div:nth-child(3) > span { --cube-color: #007a3d; }
+.flag-cube-scale .container .cube > div > span:first-child { --cube-color: #ce1126; }
+
+/* Vollflächige Einfärbung */
 @media (hover:hover) {
   .flag-cube-scale .container .cube > div > span:hover {
     transition-duration: 0s;
-    filter: brightness(1) drop-shadow(0 0 18px var(--cube-color));
     background: var(--cube-color);
+    filter: brightness(1) drop-shadow(0 0 16px var(--cube-color));
   }
   .flag-cube-scale .container .cube > div > span:hover::before,
   .flag-cube-scale .container .cube > div > span:hover::after {
@@ -128,12 +140,11 @@
   }
 }
 
-/* Touch (Tap) */
 @media (hover:none) {
   .flag-cube-scale .container .cube > div > span:active {
     transition-duration: 0s;
-    filter: brightness(1) drop-shadow(0 0 14px var(--cube-color));
     background: var(--cube-color);
+    filter: brightness(1) drop-shadow(0 0 14px var(--cube-color));
   }
   .flag-cube-scale .container .cube > div > span:active::before,
   .flag-cube-scale .container .cube > div > span:active::after {
@@ -142,18 +153,6 @@
   }
 }
 
-/* Farbzuordnung (Hover-Zustand) per Reihe */
-.flag-cube-scale .container .cube > div:nth-child(1) > span { --cube-color: #000000; }
-.flag-cube-scale .container .cube > div:nth-child(2) > span { --cube-color: #ffffff; }
-.flag-cube-scale .container .cube > div:nth-child(3) > span { --cube-color: #007a3d; }
-
-/* Linkes "Dreieck" pro Spalte (erstes span) = Rot */
-.flag-cube-scale .container .cube > div > span:first-child {
-  --cube-color: #ce1126;
-}
-
-/* Optionale leichte Grundaufhellung auf aktiver Fläche (wenn zurückfadet bleibt es weich) */
-.flag-cube-scale .container .cube > div > span:hover,
-.flag-cube-scale .container .cube > div > span:active {
-  filter: brightness(1) drop-shadow(0 0 10px var(--cube-color));
-}
+/* Optional: Sanfte Performance-Anpassung für sehr kleine Screens (nur optisch):
+   (Hier NICHTS geändert, weil 1:1 gewünscht.)
+*/
