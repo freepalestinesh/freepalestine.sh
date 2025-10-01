@@ -29,19 +29,21 @@ export default function Index() {
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
-      <section className="mb-8 md:mb-10">
+      <section className="mb-4 md:mb-6">
         <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
           {t("site.title") || "freepalestine.sh"}
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
           {t("site.tagline")}
         </p>
+      </section>
 
-        {/* Hero Cube (Abstände über CSS-Variablen gesteuert) */}
-        <div className="mt-4 md:mt-6">
+      {/* Cube an neuer Position (X) */}
+      <div className="flex justify-center mb-8 md:mb-12">
+        <div className="flag-cube-hero-scale">
           <FlagCube />
         </div>
-      </section>
+      </div>
 
       {first && (
         <article className="relative z-10 pb-8 md:pb-10 border-b">
@@ -62,14 +64,14 @@ export default function Index() {
             className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
             dangerouslySetInnerHTML={{ __html: firstParagraphHTML }}
           />
-          <div className="mt-4">
-            <Link
-              to={`/${lang}/post/${first.slug}`}
-              className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
-            >
-              {t("post.readFull") || "Read full article →"}
-            </Link>
-          </div>
+            <div className="mt-4">
+              <Link
+                to={`/${lang}/post/${first.slug}`}
+                className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
+              >
+                {t("post.readFull") || "Read full article →"}
+              </Link>
+            </div>
           {first.tags?.length ? (
             <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
               {first.tags.map((tg) => (
@@ -85,31 +87,43 @@ export default function Index() {
         </article>
       )}
 
-      <ul className="divide-y">
-        {postsData.slice(1).map((post) => (
-          <li key={post.slug} className="py-6">
-            <article>
-              <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-                <h3 className="not-prose text-lg font-medium">
-                  <Link
-                    to={`/${lang}/post/${post.slug}`}
-                    className="underline decoration-transparent hover:decoration-current"
-                  >
-                    {post.title}
-                  </Link>
-                </h3>
-                <time className="text-xs text-muted-foreground">
-                  {formatDate(post.date || "")}
-                </time>
-              </header>
-              <div
-                className="mt-2 text-sm leading-relaxed text-foreground/75"
-                dangerouslySetInnerHTML={{ __html: post.excerpt || "" }}
-              />
-            </article>
-          </li>
-        ))}
-      </ul>
+      {/* Restliche Posts (falls du weitere rendern willst – bestehende Logik ggf. ergänzen) */}
+      {postsData.slice(1).map((post) => (
+        <article
+          key={post.slug}
+          className="py-8 md:py-10 border-b last:border-b-0"
+        >
+          <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+            <h2 className="not-prose text-lg md:text-xl font-semibold leading-snug">
+              <Link
+                to={`/${lang}/post/${post.slug}`}
+                className="underline decoration-transparent hover:decoration-current"
+              >
+                {post.title}
+              </Link>
+            </h2>
+            <time className="text-xs md:text-sm text-muted-foreground">
+              {formatDate(post.date || "")}
+            </time>
+          </header>
+          <div
+            className="mt-3 text-sm md:text-[15px] leading-relaxed text-foreground/80"
+            dangerouslySetInnerHTML={{ __html: post.excerpt || "" }}
+          />
+          {post.tags?.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2 text-[11px] md:text-xs">
+              {post.tags.map((tg) => (
+                <li
+                  key={tg}
+                  className="rounded border px-2 py-0.5 text-muted-foreground"
+                >
+                  #{tg}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </article>
+      ))}
     </div>
   );
 }
