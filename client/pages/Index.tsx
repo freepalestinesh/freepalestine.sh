@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { Link, useParams } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
@@ -15,6 +21,77 @@ export default function Index() {
   }, [lang]);
 
   const first = postsData[0];
+
+  // Refs für exakte Zentrierung
+  const taglineRef = useRef<HTMLParagraphElement | null>(null);
+  const cubeWrapperRef = useRef<HTMLDivElement | null>(null);
+  const firstArticleRef = useRef<HTMLElement | null>(null);
+
+  const [margins, setMargins] = useState<{ mt: number; mb: number }>({
+    mt: 72, // Fallback Startwerte (visuell ok)
+    mb: 48,
+  });
+
+  const recompute = useCallback(() => {
+    const tl = taglineRef.current;
+    const cw = cubeWrapperRef.current;
+    const art = firstArticleRef.current;
+    if (!tl || !cw || !art) return;
+
+    // Alle aktuellen Margins kurz auf 0 setzen, um echte Roh-Distanz zu messen.
+    cw.style.marginTop = "0px";
+    cw.style.marginBottom = "0px";
+
+    const tagRect = tl.getBoundingClientRect();
+    const cubeRect = cw.getBoundingClientRect();
+    const artRect = art.getBoundingClientRect();
+
+    // Gesamtraum zwischen Tagline und Artikel-Top:
+    const totalSpace = artRect.top - tagRect.bottom;
+
+    // Cube-Höhe abziehen für Rest-Raum:
+    const free = totalSpace - cubeRect.height;
+
+    // Falls negativer/zu kleiner Raum → kein freier Platz (kleine Displays)
+    const usable = Math.max(free, 0);
+
+    // Reine mathematische Mitte:
+    let top = usable / 2;
+    let bottom = usable / 2;
+
+    // Grenzen setzen (subjektiv angenehme Limits):
+    // Mindestwerte, damit er nicht “klebt”
+    top = Math.max(top, 56); // min 3.5rem
+    bottom = Math.max(bottom, 40); // min 2.5rem
+
+    // Obergrenzen, damit kein Loch entsteht
+    top = Math.min(top, 220);
+    bottom = Math.min(bottom, 160);
+
+    // Leichter optischer Shift: Mensch nimmt oberen Abstand kleiner wahr.
+    // deshalb +8px auf top wenn größerer Raum.
+    if (usable > 120) {
+      top += 8;
+    }
+
+    setMargins({ mt: Math.round(top), mb: Math.round(bottom) });
+  }, []);
+
+  // useLayoutEffect für keinen Layout-Flash
+  useLayoutEffect(() => {
+    recompute();
+  }, [recompute, postsData.length, first?.slug]);
+
+  useEffect(() => {
+    // Resize + Font loading / dynamic content
+    const onResize = () => recompute();
+    window.addEventListener("resize", onResize);
+    const id = setTimeout(recompute, 60); // kleine Nachmessung nach evtl. Font Render
+    return () => {
+      window.removeEventListener("resize", onResize);
+      clearTimeout(id);
+    };
+  }, [recompute]);
 
   const firstParagraphHTML = (() => {
     if (!first) return "";
@@ -34,18 +111,33 @@ export default function Index() {
           <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
             {t("site.title") || "freepalestine.sh"}
           </h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
+          <p
+            ref={taglineRef}
+            className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose"
+          >
             {t("site.tagline")}
           </p>
         </header>
 
-        {/* Cube block: bewusst feste Abstände statt clamp, damit kein riesiger leerer Bereich entsteht */}
-        <div className="self-center mt-12 md:mt-16 mb-10 md:mb-14">
+        {/* Dynamisch exakt zentrierter Cube */}
+        <div
+            ref={cubeWrapperRef}
+            style={{
+              marginTop: margins.mt,
+              marginBottom: margins.mb,
+              transition: "margin 180ms ease",
+              display: "flex",
+              justifyContent: "center",
+            }}
+        >
           <FlagCube />
         </div>
 
         {first && (
-          <article className="relative z-10 pb-8 md:pb-10 border-b">
+          <article
+            ref={firstArticleRef}
+            className="relative z-10 pb-8 md:pb-10 border-b"
+          >
             <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
                 <Link
