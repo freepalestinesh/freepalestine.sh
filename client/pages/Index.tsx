@@ -5,7 +5,7 @@ import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
 import "./global-mobile.css";
 
-export { default } from "../../client/pages/Index";
+
 export default function Index() {
   const { lang = "en" } = useParams();
   const { t, formatDate } = useI18n();
