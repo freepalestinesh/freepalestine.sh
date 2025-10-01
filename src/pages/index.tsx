@@ -13,7 +13,7 @@ export default function Index() {
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none">
-      <section className="mb-0">
+      <section className="mb-0 flex flex-col">
         <header>
           <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight">
             freepalestine.sh
@@ -23,7 +23,7 @@ export default function Index() {
           </p>
         </header>
 
-        <div className="cube-hero flex justify-center my-[clamp(2.75rem,8vh,4.25rem)]">
+        <div className="self-center mt-12 md:mt-16 mb-10 md:mb-14">
           <FlagCube />
         </div>
 
