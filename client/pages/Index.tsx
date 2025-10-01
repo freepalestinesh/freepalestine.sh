@@ -36,10 +36,22 @@ export default function Index() {
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
           {t("site.tagline")}
         </p>
-
-        <div className="mt-8 md:mt-14 flex justify-center">
-          <FlagCube />
-        </div>
+<div
+  className="mt-6 md:mt-10"
+  style={{
+    // Desktop weiter rechts schieben (anpassen: 0–200px)
+    // Mobile bekommt kleineren Shift (hier 40px)
+    // Wichtig: Diese Werte überschreiben die in flag-cube.css definierten Variablen.
+    ["--x-shift-mobile" as any]: "40px",
+    ["--x-shift-desktop" as any]: "140px",
+    // Cube minimal höher oder tiefer (negativ = höher)
+    ["--y-offset" as any]: "-8px",
+    // Weniger Platz unter dem Cube bis Goals:
+    ["--cube-bottom-gap" as any]: "0.75rem"
+  }}
+>
+  <FlagCube />
+</div>
       </section>
 
       {first && (
