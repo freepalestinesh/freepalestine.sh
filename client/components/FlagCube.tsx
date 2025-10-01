@@ -2,13 +2,13 @@ import React from "react";
 import "./flag-cube.css";
 
 /**
- * Original-Look mit scale-Wrapper für konsistente Proportionen auf Mobile.
- * Keine interne Geometrieverzerrung – nur äußere Skalierung.
+ * Zentrierter & skalierter Cube.
+ * Skalierung erfolgt proportional ohne Verschieben aus der linken Ecke.
  */
 export default function FlagCube() {
   return (
     <div className="flag-cube-root">
-      <div className="flag-cube-scale">
+      <div className="flag-cube-scale" data-cube>
         <div className="container">
           <div className="cube">
             <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
