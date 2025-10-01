@@ -3,32 +3,15 @@ import { Link } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { useEffect, useState } from "react";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
-
-interface PostItem {
-  title: string;
-  date: string; // ISO
-  slug: string;
-  excerpt: string;
-  tags?: string[];
-}
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
+import { useI18n } from "@/i18n";
 
 export default function Index() {
+  const { t, lang, formatDate } = useI18n();
   const [postsData, setPostsData] = useState<PostType[]>([]);
+  
   useEffect(() => {
-    getAllPosts().then(setPostsData);
-  }, []);
+    getAllPosts(lang).then(setPostsData);
+  }, [lang]);
 
   const first = postsData[0];
 
@@ -40,18 +23,17 @@ export default function Index() {
       const p = html.split(/<\/p>/i)[0];
       return p.endsWith("</p>") ? p : p + "</p>";
     }
-    const raw = first.excerpt || html;
-    return `<p>${raw.substring(0, 320)}${raw.length > 320 ? "…" : ""}</p>`;
+    return `<p>${html.substring(0, 320)}${html.length > 320 ? "…" : ""}</p>`;
   })();
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
       <section className="mb-10">
         <h1 className="not-prose text-3xl font-semibold tracking-tight">
-          freepalestine.sh
+          {t("site.title")}
         </h1>
         <p className="mt-2 text-muted-foreground">
-          An independent, international, text-based blog. Minimal, fast, accessible.
+          {t("site.tagline")}
         </p>
         {/* Hero cube with generous vertical space (reduced on small screens) */}
         <div className="mt-12 md:mt-36 flex justify-center">
@@ -70,7 +52,7 @@ export default function Index() {
           <header className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="not-prose text-xl font-semibold">
               <Link
-                to={`/post/${first.slug}`}
+                to={`/${lang}/post/${first.slug}`}
                 className="underline decoration-transparent hover:decoration-current"
               >
                 {first.title}
@@ -86,10 +68,10 @@ export default function Index() {
           />
           <div className="mt-3">
             <Link
-              to={`/post/${first.slug}`}
+              to={`/${lang}/post/${first.slug}`}
               className="text-xs uppercase tracking-wide font-medium underline decoration-dotted hover:decoration-solid"
             >
-              Read full article →
+              {t("readFull")}
             </Link>
           </div>
           {first.tags && first.tags.length > 0 && (
@@ -115,7 +97,7 @@ export default function Index() {
               <header className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="not-prose text-lg font-semibold">
                   <Link
-                    to={`/post/${post.slug}`}
+                    to={`/${lang}/post/${post.slug}`}
                     className="underline decoration-transparent hover:decoration-current"
                   >
                     {post.title}
@@ -126,8 +108,11 @@ export default function Index() {
                 </time>
               </header>
               <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-                {(post.excerpt || "").substring(0, 180).replace(/\s+\S*$/, "")}
-                {(post.excerpt || "").length > 180 ? "…" : ""}
+                {(() => {
+                  // Extract text from HTML for excerpt
+                  const text = post.html.replace(/<[^>]*>/g, '').substring(0, 180).replace(/\s+\S*$/, '');
+                  return text + (post.html.length > 180 ? "…" : "");
+                })()}
               </p>
             </article>
           </li>

@@ -62,31 +62,54 @@ function parseFrontmatter(raw: string) {
   return { meta, body };
 }
 
-// Vite glob import: read all md files under client/content/posts
-// Vite's import.meta.glob (typed loosely here)
-const modules = import.meta.glob('../content/posts/*.md', { as: 'raw' }) as Record<string, () => Promise<string>>;
+// Vite glob import: read all md files under client/content/<lang>/posts
+// We'll load all language variants and filter by language later
+const modules = import.meta.glob('../content/*/posts/*.md', { as: 'raw' }) as Record<string, () => Promise<string>>;
 
-export async function getAllPosts(): Promise<Post[]> {
+export async function getAllPosts(lang: string = 'en'): Promise<Post[]> {
   const posts: Post[] = [];
+  
+  // Try to load posts for the requested language, fall back to English
   for (const path in modules) {
+    const pathLang = path.split('/')[2]; // Extract lang from path like ../content/en/posts/file.md
+    
+    // Skip if not the requested language and not English (fallback)
+    if (pathLang !== lang && pathLang !== 'en') continue;
+    
     const slug = path.split('/').pop()!.replace(/\.md$/, '');
+    
+    // Check if we already have this slug (prefer requested lang over fallback)
+    const existingIndex = posts.findIndex((p) => p.slug === slug);
+    
     // @ts-ignore
     const raw = await modules[path]();
     const { meta, body } = parseFrontmatter(raw as string);
-    posts.push({
+    
+    const post = {
       slug,
       title: meta.title || slug.replace(/-/g, ' '),
       date: meta.date,
       tags: meta.tags,
       html: simpleMarkdownToHtml(body),
-    });
+    };
+    
+    if (existingIndex >= 0) {
+      // If we found the post in the requested language, replace the fallback
+      if (pathLang === lang) {
+        posts[existingIndex] = post;
+      }
+      // Otherwise keep the existing one (it's either the same or already in the requested lang)
+    } else {
+      posts.push(post);
+    }
   }
+  
   // sort by date desc if available
   posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   return posts;
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const posts = await getAllPosts();
+export async function getPostBySlug(slug: string, lang: string = 'en'): Promise<Post | null> {
+  const posts = await getAllPosts(lang);
   return posts.find((p) => p.slug === slug) || null;
 }

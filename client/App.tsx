@@ -30,10 +30,13 @@ function LangLayout() {
 }
 
 function Header() {
+  const { lang } = useParams();
+  const currentLang = lang || "en";
+  
   return (
     <header className="border-b">
       <div className="max-w-3xl mx-auto px-4 py-6 flex items-center justify-between gap-4">
-        <Link to="/en/" className="text-2xl font-semibold tracking-tight">
+        <Link to={`/${currentLang}/`} className="text-2xl font-semibold tracking-tight">
           freepalestine.sh
         </Link>
         <LanguageBar />
@@ -43,11 +46,14 @@ function Header() {
 }
 
 function Footer() {
+  const { lang } = useParams();
+  const currentLang = lang || "en";
+  
   return (
     <footer className="border-t mt-16">
       <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex flex-col gap-2">
         <p>
-          © {new Date().getFullYear()} <Link to="/en/" className="underline underline-offset-4">freepalestine.sh</Link>
+          © {new Date().getFullYear()} <Link to={`/${currentLang}/`} className="underline underline-offset-4">freepalestine.sh</Link>
         </p>
       </div>
     </footer>
