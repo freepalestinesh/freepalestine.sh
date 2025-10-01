@@ -20,47 +20,45 @@ export default function Index() {
         </p>
       </section>
 
-      <div className="flex justify-center mb-8 md:mb-12">
-        <div className="flag-cube-hero-scale">
-          <FlagCube />
-        </div>
+      <div className="flex justify-center mt-10 md:mt-16 mb-12 md:mb-16">
+        <FlagCube />
       </div>
 
       <ul className="divide-y">
         {postsData.map((post) => (
-            <li key={post.slug} className="py-8 md:py-10">
-              <article>
-                <header className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className="not-prose text-xl font-semibold">
-                    <Link
-                      to={`/post/${post.slug}`}
-                      className="underline decoration-transparent hover:decoration-current"
+          <li key={post.slug} className="py-8 md:py-10">
+            <article>
+              <header className="flex flex-wrap items-baseline justify-between gap-2">
+                <h2 className="not-prose text-xl font-semibold">
+                  <Link
+                    to={`/post/${post.slug}`}
+                    className="underline decoration-transparent hover:decoration-current"
+                  >
+                    {post.title}
+                  </Link>
+                </h2>
+                <time className="text-sm text-muted-foreground">
+                  {post.date}
+                </time>
+              </header>
+              <div
+                className="mt-3 text-sm leading-relaxed text-foreground/80"
+                dangerouslySetInnerHTML={{ __html: post.html }}
+              />
+              {post.tags && post.tags.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {post.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded border px-2 py-0.5 text-muted-foreground"
                     >
-                      {post.title}
-                    </Link>
-                  </h2>
-                  <time className="text-sm text-muted-foreground">
-                    {post.date}
-                  </time>
-                </header>
-                <div
-                  className="mt-3 text-sm leading-relaxed text-foreground/80"
-                  dangerouslySetInnerHTML={{ __html: post.html }}
-                />
-                {post.tags && post.tags.length > 0 ? (
-                  <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                    {post.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded border px-2 py-0.5 text-muted-foreground"
-                      >
-                        #{t}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            </li>
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </article>
+          </li>
         ))}
       </ul>
     </div>
