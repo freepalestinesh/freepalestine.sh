@@ -3,8 +3,9 @@ import "./flag-cube.css";
 
 export default function FlagCube() {
   return (
-    <div className="flag-cube-wrapper">
-      <div className="container">
+    <div className="flag-cube-shell" aria-hidden="true">
+      <div className="flag-cube-wrapper">
+        {/* Column group 1 */}
         <div className="cube">
           <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
             <span style={{ ["--i" as any]: 3 }} />
@@ -23,6 +24,7 @@ export default function FlagCube() {
           </div>
         </div>
 
+        {/* Column group 2 */}
         <div className="cube">
           <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
             <span style={{ ["--i" as any]: 3 }} />
@@ -41,6 +43,7 @@ export default function FlagCube() {
           </div>
         </div>
 
+        {/* Column group 3 */}
         <div className="cube">
           <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
             <span style={{ ["--i" as any]: 3 }} />
@@ -59,6 +62,7 @@ export default function FlagCube() {
           </div>
         </div>
       </div>
+      <span className="flag-cube-fallback-text">▢</span>
     </div>
   );
 }
