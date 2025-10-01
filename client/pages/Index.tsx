@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import FlagCube from "../components/FlagCube"; // Re-export der stabilen PalestineFlagCubeStable-Komponente
+import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
 import "../global-mobile.css";
 
 /**
- * Statische, stabile Index-Version (Schritt 5):
- * - Kein dynamisches Re-Messen mehr
- * - Fester vertikaler Abstand für den Cube
- * - Der Cube skaliert intern selbst (mode=stepped / minScale) ohne Layout-Jumps
+ * Variante D:
+ * - Statischer Cube mit fixem vertikalem Abstand.
+ * - Keine dynamische Berechnung mehr (einfach & stabil).
+ * - Bei Bedarf marginTop / marginBottom anpassen.
  */
 
 export default function Index() {
@@ -50,17 +50,11 @@ export default function Index() {
         <div
           className="w-full flex justify-center"
           style={{
-            marginTop: 180,   // Bei Bedarf anpassen (z.B. 160 / 200)
-            marginBottom: 72, // Abstand oberhalb des ersten Artikels
+            marginTop: 180,  // Anpassen falls nötig (z.B. 160 / 200)
+            marginBottom: 72 // Abstand zum ersten Artikel
           }}
         >
-          <FlagCube
-            mode="stepped"        // "stepped" | "fluid" | "none"
-            minScale={0.55}       // Untergrenze (kleine Screens)
-            revertDurationSec={6} // Fade-out Dauer nach Hover
-            // disableHover          // Optional aktivieren, falls keine Interaktion gewünscht
-            ariaLabel="Interactive isometric cube stack"
-          />
+          <FlagCube />
         </div>
 
         {first && (
