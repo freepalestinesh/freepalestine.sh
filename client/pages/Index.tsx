@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
 import { useI18n } from "@/i18n";
-import "./global-mobile.css";
+import "../global-mobile.css";
 
 
 export default function Index() {
