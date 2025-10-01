@@ -1,17 +1,64 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://cdn.builder.io; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data: https://cdn.builder.io; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    />
+
     <title>freepalestine.sh</title>
-    <meta name="description" content="indipendent journalism – freepalestine.sh" />
+    <meta
+      name="description"
+      content="Independent, international, text-based blog. Minimal, fast, accessible."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="freepalestine.sh" />
+    <meta property="og:title" content="freepalestine.sh" />
+    <meta
+      property="og:description"
+      content="Independent, international, text-based blog. Minimal, fast, accessible."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://freepalestine.sh/" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="freepalestine.sh" />
+    <meta
+      name="twitter:description"
+      content="Independent, international, text-based blog. Minimal, fast, accessible."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- (Optional) hreflang Alternates – auskommentiert bis Deploy-URL final ist
+    <link rel="alternate" hreflang="en" href="https://freepalestine.sh/en/" />
+    <link rel="alternate" hreflang="de" href="https://freepalestine.sh/de/" />
+    <link rel="alternate" hreflang="fr" href="https://freepalestine.sh/fr/" />
+    <link rel="alternate" hreflang="ar" href="https://freepalestine.sh/ar/" />
+    <link rel="alternate" hreflang="fa" href="https://freepalestine.sh/fa/" />
+    <link rel="alternate" hreflang="ru" href="https://freepalestine.sh/ru/" />
+    <link rel="alternate" hreflang="zh" href="https://freepalestine.sh/zh/" />
+    <link rel="alternate" hreflang="x-default" href="https://freepalestine.sh/en/" />
+    -->
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
   </head>
-
   <body>
+    <noscript>
+      <div style="padding:1rem;font:14px/1.4 system-ui, sans-serif">
+        This site requires JavaScript to render content.
+      </div>
+    </noscript>
     <div id="root"></div>
-
     <script type="module" src="/client/App.tsx"></script>
   </body>
 </html>
