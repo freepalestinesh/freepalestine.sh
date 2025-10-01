@@ -1,20 +1,13 @@
-/* Flag Cube – Original-Look rekonstruiert, aber ohne globale Layout-Eingriffe.
-   Wichtig: NICHT body oder * global überschreiben, alles scoped. */
+/* Original Cube Look – ohne globale body/* Eingriffe, mobil anpassbar */
 
 .flag-cube-root {
-  /* Platzhalter – falls du margin-top o.Ä. zentral justieren willst */
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.flag-cube-wrapper {
   position: relative;
-  /* Optional zentrieren innerhalb des vorhandenen Layout-Containers */
+  /* optional: für horizontale Zentrierung innerhalb deines Layouts */
+  /* width: 100%; display:flex; justify-content:center; */
 }
 
-/* Konfigurierbare Variablen */
-.flag-cube-wrapper {
+/* Konfiguration */
+.flag-cube-root {
   --REVERT_DURATION: 6s;
   --span-size: 50px;
   --gap-y: 30px;
@@ -22,44 +15,54 @@
   --ty-unit: 60px;
   --skew-angle: -20deg;
   --layer-offset: 60px;
-  --layer-top-shift: -80px;
+  --layer-top-shift: -40px; /* weniger aggressiv als -80px, mobil verträglicher */
 }
 
-/* Responsiv etwas kleiner auf sehr schmalen Screens */
-@media (max-width: 480px) {
-  .flag-cube-wrapper {
+@media (max-width: 520px) {
+  .flag-cube-root {
     --span-size: 44px;
     --gap-y: 26px;
     --tx-unit: 62px;
     --ty-unit: 54px;
     --layer-offset: 52px;
-    --layer-top-shift: -40px;
+    --layer-top-shift: -20px;
+  }
+}
+@media (max-width: 390px) {
+  .flag-cube-root {
+    --span-size: 40px;
+    --gap-y: 22px;
+    --tx-unit: 56px;
+    --ty-unit: 48px;
+    --layer-offset: 46px;
+    --layer-top-shift: -12px;
   }
 }
 
-.flag-cube-wrapper .container {
+/* Container (schräge Projektion) */
+.flag-cube-root .container {
   position: relative;
   top: var(--layer-top-shift);
   transform: skewY(var(--skew-angle));
-  /* Keine absolute Zentrierung hier – du positionierst das Element über Parent */
+  /* Kein width/height zwingend nötig – ergibt sich aus Inhalt */
+  pointer-events: none; /* nur die Tiles sollen Pointer bekommen */
 }
-
-/* Cube-Layer Positionierung (3 übereinander) */
-.flag-cube-wrapper .container .cube {
+.flag-cube-root .container .cube {
   position: relative;
   z-index: 2;
+  pointer-events: none;
 }
-.flag-cube-wrapper .container .cube:nth-child(2) {
+.flag-cube-root .container .cube:nth-child(2) {
   z-index: 1;
   transform: translate(calc(var(--layer-offset) * -1), calc(var(--layer-offset) * -1));
 }
-.flag-cube-wrapper .container .cube:nth-child(3) {
+.flag-cube-root .container .cube:nth-child(3) {
   z-index: 3;
   transform: translate(var(--layer-offset), var(--layer-offset));
 }
 
-/* Spaltenblöcke */
-.flag-cube-wrapper .container .cube > div {
+/* Spalten */
+.flag-cube-root .container .cube > div {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -68,16 +71,18 @@
     calc(-1 * var(--tx-unit) * var(--x)),
     calc(-1 * var(--ty-unit) * var(--y))
   );
+  pointer-events: none;
 }
 
-/* Einzelelement (die "Kacheln") */
-.flag-cube-wrapper .container .cube > div > span {
+/* Tiles */
+.flag-cube-root .container .cube > div > span {
   position: relative;
   display: inline-block;
   width: var(--span-size);
   height: var(--span-size);
   z-index: calc(1 * var(--i));
   cursor: pointer;
+  pointer-events: auto;
 
   --flag-color: #ffffff;
   --flag-color-light: #f2f2f2;
@@ -87,36 +92,36 @@
   transition-property: background, filter;
   transition-duration: var(--REVERT_DURATION);
   transition-timing-function: ease;
+
   overflow: visible;
-  border-radius: 8px;
+  border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
     0 2px 6px -1px rgba(0,0,0,0.25),
     0 0 0 1px rgba(0,0,0,0.05) inset;
+  filter: brightness(0.97);
 }
-
-/* pseudo-3D Flächen */
-.flag-cube-wrapper .container .cube > div > span::before,
-.flag-cube-wrapper .container .cube > div > span::after {
+.flag-cube-root .container .cube > div > span::before,
+.flag-cube-root .container .cube > div > span::after {
   content: "";
   position: absolute;
   transition-property: background;
   transition-duration: var(--REVERT_DURATION);
   transition-timing-function: ease;
+  border-radius: 6px;
 }
 
-.flag-cube-wrapper .container .cube > div > span::before {
+.flag-cube-root .container .cube > div > span::before {
   left: calc(-0.8 * var(--span-size));
   width: calc(0.8 * var(--span-size));
   height: 100%;
   background: var(--flag-color-light);
   transform-origin: right;
   transform: skewY(45deg);
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
-
-.flag-cube-wrapper .container .cube > div > span::after {
+.flag-cube-root .container .cube > div > span::after {
   top: calc(-0.8 * var(--span-size));
   left: 0;
   width: 100%;
@@ -124,68 +129,52 @@
   background: var(--flag-color-lighter);
   transform-origin: bottom;
   transform: skewX(45deg);
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
 
-/* Hover (Desktop) */
+/* Hover (Desktop) – sofortiger Farbsprung */
 @media (hover:hover) {
-  .flag-cube-wrapper .container .cube > div > span:hover {
+  .flag-cube-root .container .cube > div > span:hover {
     transition-duration: 0s;
     background: var(--hover-color);
-    filter: drop-shadow(0 0 14px var(--hover-color));
+    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
   }
-  .flag-cube-wrapper .container .cube > div > span:hover::before,
-  .flag-cube-wrapper .container .cube > div > span:hover::after {
+  .flag-cube-root .container .cube > div > span:hover::before,
+  .flag-cube-root .container .cube > div > span:hover::after {
     transition-duration: 0s;
     background: var(--hover-color-light);
   }
 }
 
-/* FARBCODIERUNG (Palästina-Farblogik) */
-/* Reihe 1 (oben) -> Schwarz (wenn NICHT erstes span) */
-.flag-cube-wrapper .container .cube > div:nth-child(1) > span {
-  --hover-color: #000000;
-  --hover-color-light: #2b2b2b;
-  --hover-color-lighter: #4d4d4d;
+/* Touch (Tap = kurzer Effekt) */
+@media (hover:none) {
+  .flag-cube-root .container .cube > div > span:active {
+    transition-duration: 0s;
+    background: var(--hover-color);
+    filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
+  }
 }
-/* Reihe 2 (Mitte) -> Weiß */
-.flag-cube-wrapper .container .cube > div:nth-child(2) > span {
+
+/* Farbzuordnung Zeilen */
+.flag-cube-root .container .cube > div:nth-child(1) > span {
+  --hover-color: #000000;
+  --hover-color-light: #2d2d2d;
+  --hover-color-lighter: #4f4f4f;
+}
+.flag-cube-root .container .cube > div:nth-child(2) > span {
   --hover-color: #ffffff;
   --hover-color-light: #f2f2f2;
   --hover-color-lighter: #e6e6e6;
 }
-/* Reihe 3 (unten) -> Grün */
-.flag-cube-wrapper .container .cube > div:nth-child(3) > span {
+.flag-cube-root .container .cube > div:nth-child(3) > span {
   --hover-color: #007a3d;
   --hover-color-light: #00994d;
   --hover-color-lighter: #33aa66;
 }
-/* Linkes Dreieck (erstes span jeder Spalte) -> Rot */
-.flag-cube-wrapper .container .cube > div > span:first-child {
+/* Linkes “Dreieck” (erstes span jeder Spalte) */
+.flag-cube-root .container .cube > div > span:first-child {
   --hover-color: #ce1126;
   --hover-color-light: #e63946;
   --hover-color-lighter: #f06263;
 }
-
-/* Optional: Ein bisschen initiale neutrale Helligkeit */
-.flag-cube-wrapper .container .cube > div > span {
-  filter: brightness(0.98);
-}
-.flag-cube-wrapper .container .cube > div > span:hover {
-  filter: brightness(1) drop-shadow(0 0 14px var(--hover-color));
-}
-
-/* Touch-Hilfe (Optional: kurzer “Tap”-Effekt) */
-@media (hover:none) {
-  .flag-cube-wrapper .container .cube > div > span:active {
-    transition-duration: 0s;
-    background: var(--hover-color);
-    filter: drop-shadow(0 0 12px var(--hover-color));
-  }
-}
-
-/* (OPTIONAL alt) Wenn du unbedingt globalen dunkelblauen Hintergrund willst:
-.flag-cube-root {
-  background: #25335b;
-} */
