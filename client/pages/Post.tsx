@@ -1,41 +1,37 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { getPostBySlug, Post as PostType } from "@/lib/posts";
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString("de-DE", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
+import { useI18n } from "@/i18n";
 
 export default function Post() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug = "", lang = "en" } = useParams();
+  const { formatDate, t } = useI18n();
   const [post, setPost] = useState<PostType | null>(null);
 
   useEffect(() => {
-    if (!slug) return;
-    getPostBySlug(slug).then(setPost);
-  }, [slug]);
+    getPostBySlug(slug, lang).then((p) => setPost(p || null));
+  }, [slug, lang]);
 
-  if (!post) return <div>Loading…</div>;
+  if (!post) {
+    return <div className="text-sm text-muted-foreground">Loading…</div>;
+  }
 
   return (
     <article className="prose prose-zinc dark:prose-invert max-w-none">
-      <p className="not-prose text-sm mb-4">
-        <Link to="/" className="underline underline-offset-4">← Zurück</Link>
-      </p>
-
-      <h1 className="not-prose text-3xl font-semibold tracking-tight">{post.title}</h1>
-      <time className="text-sm text-muted-foreground">{formatDate(post.date || "")}</time>
-
-      <div className="mt-6">
-        <div dangerouslySetInnerHTML={{ __html: post.html }} />
+      <header className="mb-6">
+        <h1 className="mb-2">{post.title}</h1>
+        <time className="block text-sm text-muted-foreground">
+          {formatDate(post.date || "")}
+        </time>
+      </header>
+      <div dangerouslySetInnerHTML={{ __html: post.html || "" }} />
+      <div className="mt-10 text-xs">
+        <Link
+          to={`/${lang}/`}
+          className="underline decoration-dotted hover:decoration-solid"
+        >
+          {t("nav.backHome") || "Back to home"}
+        </Link>
       </div>
     </article>
   );
