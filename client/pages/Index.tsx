@@ -29,33 +29,22 @@ export default function Index() {
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
-      <section className="mb-10">
+      <section className="mb-8 md:mb-10">
         <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
           {t("site.title") || "freepalestine.sh"}
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
           {t("site.tagline")}
         </p>
-<div
-  className="mt-6 md:mt-10"
-  style={{
-    // Desktop weiter rechts schieben (anpassen: 0–200px)
-    // Mobile bekommt kleineren Shift (hier 40px)
-    // Wichtig: Diese Werte überschreiben die in flag-cube.css definierten Variablen.
-    ["--x-shift-mobile" as any]: "40px",
-    ["--x-shift-desktop" as any]: "140px",
-    // Cube minimal höher oder tiefer (negativ = höher)
-    ["--y-offset" as any]: "-8px",
-    // Weniger Platz unter dem Cube bis Goals:
-    ["--cube-bottom-gap" as any]: "0.75rem"
-  }}
->
-  <FlagCube />
-</div>
+
+        {/* Hero Cube (Abstände über CSS-Variablen gesteuert) */}
+        <div className="mt-4 md:mt-6">
+          <FlagCube />
+        </div>
       </section>
 
       {first && (
-        <article className="relative z-10 pb-10 border-b">
+        <article className="relative z-10 pb-8 md:pb-10 border-b">
           <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
             <h2 className="not-prose text-xl md:text-2xl font-semibold leading-snug">
               <Link
