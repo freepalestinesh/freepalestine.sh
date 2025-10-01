@@ -1,106 +1,128 @@
-import React from "react";
-import "./palestine-flag-cube.css";
+import React, { useEffect, useRef, useState } from "react";
+import "./palestine-flag-cube-stable.css";
 
-export interface PalestineFlagCubeProps {
-  /**
-   * Sekunden (oder Bruchteil) zum Zurückverblassen.
-   * Wird als CSS-Variable --pfc-revert gesetzt.
-   */
-  revertDurationSec?: number;
-  /**
-   * Minimale Skalierung relativ zur Basisbreite (Default 0.55)
-   */
+export type ScaleMode = "fluid" | "stepped" | "none";
+
+interface PalestineFlagCubeStableProps {
+  /** Basisgröße in px (Breite = Höhe, wirkt als 1:1 Stage). Default: 520 */
+  baseSize?: number;
+  /** Minimale Skalierung (nur für fluid / stepped). Default: 0.55 */
   minScale?: number;
-  /**
-   * Klassen für zusätzliches Wrapping (z.B. Tailwind)
-   */
-  className?: string;
-  /**
-   * Falls true: deaktiviert Hover-Effekt (reine statische Darstellung)
-   */
+  /** Skalierungsmodus: fluid (stufenlos), stepped (Breakpoints), none (immer 1) */
+  mode?: ScaleMode;
+  /** Individuelle Steps für mode="stepped" (klein -> groß). Werte 0..1 */
+  steps?: number[];
+  /** Dauer (Sekunden) für das Zurückverblassen nach Hover */
+  revertDurationSec?: number;
+  /** Deaktiviert interaktive Hover-Effekte */
   disableHover?: boolean;
-  /**
-   * Aria Label (wenn dekorativ -> leer lassen: aria-hidden)
-   */
+  /** Zusätzliche Wrapper-Klassen (Tailwind etc.) */
+  className?: string;
+  /** Aria Label; leer => dekorativ */
   ariaLabel?: string;
+  /** Optionaler expliziter Scale Override (überschreibt Berechnung) */
+  forceScale?: number;
 }
 
-const PalestineFlagCube: React.FC<PalestineFlagCubeProps> = ({
-  revertDurationSec = 6,
+/**
+ * Stabile, kapselte Version des Flag Cubes mit skalierbarer 3D-Darstellung.
+ * Verwendet transform-Skalierung innerhalb einer fixen Stage, verhindert Layout-Jumps.
+ */
+const PalestineFlagCubeStable: React.FC<PalestineFlagCubeStableProps> = ({
+  baseSize = 520,
   minScale = 0.55,
-  className = "",
+  mode = "stepped",
+  steps = [0.6, 0.72, 0.85, 0.95, 1],
+  revertDurationSec = 6,
   disableHover = false,
-  ariaLabel = ""
+  className = "",
+  ariaLabel = "",
+  forceScale
 }) => {
-  // Inline-CSS-Variablen für parametrisierte Steuerung
-  const style: React.CSSProperties = {
-    // Wird in CSS als clamp( minScale , (100vw - 2rem)/base, 1 )
-    // gesteuert über --pfc-min-scale
-    ["--pfc-min-scale" as any]: minScale,
-    ["--pfc-revert" as any]: `${revertDurationSec}s`,
-  };
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState<number>(1);
+
+  useEffect(() => {
+    if (typeof forceScale === "number") {
+      setScale(forceScale);
+      return;
+    }
+    if (mode === "none") {
+      setScale(1);
+      return;
+    }
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const compute = () => {
+      const w = el.clientWidth;
+      const raw = Math.min(1, w / baseSize);
+      const clamped = Math.max(minScale, raw);
+      if (mode === "fluid") {
+        // leichte Rundung reduziert ständiges Re-Rendern bei Resize
+        setScale(parseFloat(clamped.toFixed(3)));
+      } else if (mode === "stepped") {
+        // nächst kleiner oder gleicher Step (oder minScale)
+        const usable = steps
+          .filter((s) => s <= clamped && s >= minScale)
+          .sort((a, b) => b - a)[0] ?? minScale;
+        setScale(usable);
+      }
+    };
+
+    compute();
+
+    let ro: ResizeObserver | null = null;
+    if ("ResizeObserver" in window) {
+      ro = new ResizeObserver(() => compute());
+      ro.observe(el);
+    } else {
+      // Fallback: einfache window resize
+      const h = () => compute();
+      window.addEventListener("resize", h);
+      return () => window.removeEventListener("resize", h);
+    }
+    return () => {
+      if (ro) ro.disconnect();
+    };
+  }, [baseSize, minScale, mode, steps, forceScale]);
 
   const accessibility = ariaLabel
     ? { role: "img", "aria-label": ariaLabel }
     : { "aria-hidden": "true" };
 
   return (
-    <div className={`pfc-root ${disableHover ? "pfc-no-hover" : ""} ${className}`} style={style} {...accessibility}>
-      <div className="pfc-scale" data-cube>
-        <div className="pfc-container">
-          {/* Drei Layer à 3 Spalten à 3 Würfel (wie dein Original) */}
-          <div className="pfc-layer">
-            <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 0, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-          </div>
-
-          <div className="pfc-layer">
-            <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 0, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-          </div>
-
-          <div className="pfc-layer">
-            <div style={{ ["--x" as any]: -1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 0, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
-            <div style={{ ["--x" as any]: 1, ["--y" as any]: 0 }}>
-              <span style={{ ["--i" as any]: 3 }} />
-              <span style={{ ["--i" as any]: 2 }} />
-              <span style={{ ["--i" as any]: 1 }} />
-            </div>
+    <div
+      ref={wrapperRef}
+      className={`pfc-root ${disableHover ? "pfc-no-hover" : ""} ${className}`}
+      style={
+        {
+          "--pfc-base": `${baseSize}px`,
+          "--pfc-scale": scale,
+          "--pfc-revert": `${revertDurationSec}s`,
+        } as React.CSSProperties
+      }
+      {...accessibility}
+    >
+      <div className="pfc-viewport">
+        <div className="pfc-scale">
+          <div className="pfc-container">
+            {/* 3 Layer á 3 Spalten á 3 Tiles */}
+            {[0, 1, 2].map((layer) => (
+              <div className="pfc-layer" key={layer} data-layer={layer}>
+                {[-1, 0, 1].map((x) => (
+                  <div
+                    key={x}
+                    className="pfc-col"
+                    style={{ ["--x" as any]: x, ["--y" as any]: 0 }}
+                  >
+                    {[3, 2, 1].map((i) => (
+                      <span key={i} style={{ ["--i" as any]: i }} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -108,4 +130,4 @@ const PalestineFlagCube: React.FC<PalestineFlagCubeProps> = ({
   );
 };
 
-export default PalestineFlagCube;
+export default PalestineFlagCubeStable;
