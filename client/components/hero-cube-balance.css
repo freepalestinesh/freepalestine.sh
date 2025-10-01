@@ -1,0 +1,21 @@
+.hero-cube-balance {
+  /* Basis: Mobile */
+  margin-top: 5.5rem;  /* ≈ 88px */
+  margin-bottom: 2.5rem; /* ≈ 40px */
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .hero-cube-balance {
+    margin-top: 7.5rem;  /* ≈ 120px */
+    margin-bottom: 3.25rem; /* ≈ 52px */
+  }
+}
+
+@media (min-width: 960px) {
+  .hero-cube-balance {
+    margin-top: 8.75rem;   /* ≈ 140px */
+    margin-bottom: 3.75rem; /* ≈ 60px */
+  }
+}
