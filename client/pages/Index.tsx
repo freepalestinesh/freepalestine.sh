@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import FlagCube from "../components/FlagCube";
 import { getAllPosts, Post as PostType } from "@/lib/posts";
@@ -29,8 +29,7 @@ export default function Index() {
 
   return (
     <div className="prose prose-zinc dark:prose-invert max-w-none relative">
-      {/* Hero-Bereich: Titel -> Tagline -> Cube -> erster Artikel */}
-      <section className="mb-0">
+      <section className="mb-0 flex flex-col">
         <header>
           <h1 className="not-prose text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
             {t("site.title") || "freepalestine.sh"}
@@ -40,13 +39,8 @@ export default function Index() {
           </p>
         </header>
 
-        {/* Cube block: symmetrischer Abstand per clamp für Mobile & Desktop */}
-        <div
-          className="
-            cube-hero flex justify-center
-            my-[clamp(2.75rem,8vh,4.25rem)]
-          "
-        >
+        {/* Cube block: bewusst feste Abstände statt clamp, damit kein riesiger leerer Bereich entsteht */}
+        <div className="self-center mt-12 md:mt-16 mb-10 md:mb-14">
           <FlagCube />
         </div>
 
@@ -93,7 +87,6 @@ export default function Index() {
         )}
       </section>
 
-      {/* Restliche Posts */}
       {postsData.slice(1).map((post) => (
         <article
           key={post.slug}
