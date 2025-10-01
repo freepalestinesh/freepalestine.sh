@@ -2,16 +2,19 @@ import React from "react";
 import "./flag-cube.css";
 
 /**
- * Palestine Cube – permanente Farben
- * Props sind weggelassen (einfach), Klassen kannst du extern setzen.
- * Für komplett flache, kantige Farbe: root class zusätzlich "fp-solid".
+ * Original Hover-Cube (Palästina-Farben nur bei Hover).
+ * 1:1 Struktur wie dein statisches HTML:
+ *  - 3 .cube Layer
+ *  - je 3 Spalten (div mit --x/--y)
+ *  - je 3 span mit --i
+ * Gescoped in .fp-hero-cube damit keine Konflikte mit anderen .container/.cube Klassen.
  */
 export default function FlagCube() {
   return (
-    <div className="fp-legacy-cube fp-solid" aria-hidden="true">
-      <div className="fp-container">
+    <div className="fp-hero-cube" aria-hidden="true">
+      <div className="container">
         {[0, 1, 2].map(layer => (
-          <div className="fp-cube" key={layer}>
+          <div className="cube" key={layer}>
             {[-1, 0, 1].map(x => (
               <div key={x} style={{ ["--x" as any]: x, ["--y" as any]: 0 }}>
                 {[3, 2, 1].map(i => (
