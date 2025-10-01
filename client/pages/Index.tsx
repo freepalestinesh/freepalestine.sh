@@ -38,10 +38,9 @@ export default function Index() {
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-prose">
           {t("site.tagline")}
         </p>
-
-        <div className="mt-12 md:mt-32 flex justify-center">
-          {/* FlagCube Root */}
-          <FlagCube />
+<div className="mt-8 md:mt-14 flex justify-center">
+  <FlagCube />
+</div>
         </div>
       </section>
 
