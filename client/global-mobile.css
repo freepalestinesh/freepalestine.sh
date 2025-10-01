@@ -2,8 +2,45 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Stabilere Wortumbrüche auf sehr schmalen Geräten */
 @media (max-width: 480px) {
   p, li {
     word-break: break-word;
+    overflow-wrap: anywhere;
   }
 }
+
+/* RTL Feinanpassungen */
+.rtl-layout {
+  direction: rtl;
+}
+
+.rtl-layout .hero h1,
+.rtl-layout .hero p {
+  text-align: center;
+}
+
+.rtl-layout .content a {
+  direction: rtl;
+}
+
+/* Optional: glatteres Scrollen auf Mobile */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Kleinere Typographie-Feinjustierung für super kleine Screens */
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 1.9rem;
+    line-height: 1.15;
+  }
+  .hero p {
+    font-size: 14px;
+  }
+}
+
+/* Falls visuelles Springen beim Re-Messen stört:
+   Ausblenden bis erste Messung durch ist (kannst du aktivieren)
+   .w-full.flex.justify-center[data-pending="1"] { visibility: hidden; }
+*/
