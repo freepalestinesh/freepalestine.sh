@@ -2,12 +2,13 @@ import React from "react";
 import "./flag-cube.css";
 
 /**
- * Gescopte Legacy-Variante (Wrapper .fp-legacy-cube)
- * Verhindert Konflikte mit anderen .container/.cube Klassen.
+ * Palestine Cube – permanente Farben
+ * Props sind weggelassen (einfach), Klassen kannst du extern setzen.
+ * Für komplett flache, kantige Farbe: root class zusätzlich "fp-solid".
  */
 export default function FlagCube() {
   return (
-    <div className="fp-legacy-cube" aria-hidden="true">
+    <div className="fp-legacy-cube fp-solid" aria-hidden="true">
       <div className="fp-container">
         {[0, 1, 2].map(layer => (
           <div className="fp-cube" key={layer}>
