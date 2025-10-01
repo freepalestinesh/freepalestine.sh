@@ -1,17 +1,10 @@
-/* ==========================================================================
-   Palestine Flag Cube Stable
-   - Keine globalen Reset-Selektoren
-   - Fixe Stage (Quadrat), interne Skalierung via transform
-   - Prefixed (.pfc-)
-   ========================================================================== */
+/* Palestine Flag Cube Stable (pfc-) */
 
 .pfc-root {
   --pfc-base: 520px;
   --pfc-scale: 1;
   --pfc-revert: 6s;
-
   width: 100%;
-  /* Stage bleibt quadratisch; verhindert Layout-Shift beim Skalieren */
   aspect-ratio: 1 / 1;
   max-width: var(--pfc-base);
   position: relative;
@@ -20,26 +13,23 @@
   line-height: 0;
 }
 
-/* Viewport hält die absolute Basisfläche (unskaliert) */
 .pfc-viewport {
   position: absolute;
   inset: 0;
 }
 
-/* Skaliert komplette Szene um die Mitte */
 .pfc-scale {
   position: absolute;
   inset: 0;
-  transform: translate(-50%, -50%) scale(var(--pfc-scale));
   top: 50%;
   left: 50%;
   width: var(--pfc-base);
   height: var(--pfc-base);
+  transform: translate(-50%, -50%) scale(var(--pfc-scale));
   transform-origin: center center;
   pointer-events: none;
 }
 
-/* Isometrische Container-Schiebung */
 .pfc-container {
   position: relative;
   top: -80px;
@@ -47,24 +37,20 @@
   pointer-events: none;
 }
 
-/* Layer */
 .pfc-layer {
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
-
 .pfc-layer:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
-
 .pfc-layer:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
 }
 
-/* Spalten */
 .pfc-col {
   position: absolute;
   display: flex;
@@ -74,7 +60,6 @@
   pointer-events: none;
 }
 
-/* Tiles */
 .pfc-col > span {
   position: relative;
   display: inline-block;
@@ -83,16 +68,11 @@
   z-index: calc(1 * var(--i));
   cursor: pointer;
   pointer-events: auto;
-
   --flag-color: #ffffff;
   --flag-color-light: #f2f2f2;
   --flag-color-lighter: #e6e6e6;
   background: var(--flag-color);
-
-  transition-property: background, filter;
-  transition-duration: var(--pfc-revert);
-  transition-timing-function: ease;
-
+  transition: background var(--pfc-revert) ease, filter var(--pfc-revert) ease;
   border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
@@ -102,7 +82,6 @@
   overflow: visible;
 }
 
-/* Kanten */
 .pfc-col > span::before,
 .pfc-col > span::after {
   content: "";
@@ -134,7 +113,7 @@
   border-top-left-radius: 8px;
 }
 
-/* Farbzuweisungen (Palästina-Farblogik + rotes Dreieck) */
+/* Farbzuordnung (Schwarz / Weiß / Grün) */
 .pfc-layer > .pfc-col:nth-child(1) > span {
   --hover-color: #000000;
   --hover-color-light: #2d2d2d;
@@ -150,7 +129,8 @@
   --hover-color-light: #00994d;
   --hover-color-lighter: #33aa66;
 }
-/* linkes Dreieck (erstes span jeder Spalte) */
+
+/* Linkes Dreieck: erstes span jeder Spalte */
 .pfc-col > span:first-child {
   --hover-color: #ce1126;
   --hover-color-light: #e63946;
@@ -179,7 +159,3 @@
     filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
   }
 }
-
-/* Step-basiertes Scale-Finetuning optional (optional als Ergänzung):
-   Wenn du mode="stepped" verwendest, kannst du über Utility-Klassen alternative
-   Breakpoints definieren, z. B. .pfc-step-sm ... (hier nur Beispiel, nicht aktiv) */
