@@ -1,54 +1,60 @@
-/* =======================================================================
-   Palestine Flag Cube – Permanent Colors
-   Namespace: .fp-legacy-cube
-   Layer-Aufbau:
-     Jede .fp-cube = ein Tiefen-Layer (3 Stück)
-     Jede .fp-cube > div (nth-child 1..3) = Streifen-Gruppe (Black / White / Green)
-     Erstes span jeder Gruppe = roter "Triangel"-Impuls – hier optional deaktivierbar
-   ======================================================================= */
+/* ==========================================================================
+   ORIGINAL HOVER-VARIANTE (Palästina)
+   - Basisfarbe weiß, Farben nur bei Hover, langsames Zurückfaden
+   - Gescope't in .fp-hero-cube (verhindert Kollisionen)
+   - Keine globalen Resets
+   ========================================================================== */
 
-.fp-legacy-cube {
+.fp-hero-cube {
   --REVERT_DURATION: 6s;
-  --cube-size: 520px;
-  width: var(--cube-size);
-  height: var(--cube-size);
   position: relative;
+  width: 520px;
+  height: 520px;
   pointer-events: none;
   user-select: none;
   font-size: 0;
   line-height: 0;
 }
 
+/* Responsiv optional (kannst du anpassen) */
 @media (max-width: 560px) {
-  .fp-legacy-cube {
-    --cube-size: 460px;
+  .fp-hero-cube {
+    width: 460px;
+    height: 460px;
+  }
+}
+@media (max-width: 440px) {
+  .fp-hero-cube {
+    width: 400px;
+    height: 400px;
   }
 }
 
-.fp-legacy-cube .fp-container {
+/* Isometrie-Container */
+.fp-hero-cube .container {
   position: relative;
   top: -80px;
   transform: skewY(-20deg);
   pointer-events: none;
 }
 
-/* Layer Staffelung */
-.fp-legacy-cube .fp-cube {
+/* Layer */
+.fp-hero-cube .container .cube {
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
-.fp-legacy-cube .fp-cube:nth-child(2) {
+.fp-hero-cube .container .cube:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
-.fp-legacy-cube .fp-cube:nth-child(3) {
+.fp-hero-cube .container .cube:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
 }
 
-/* Spalten in jeder Ebene */
-.fp-legacy-cube .fp-cube > div {
+/* Spalten */
+.fp-hero-cube .container .cube > div {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -57,146 +63,108 @@
   pointer-events: none;
 }
 
-/* Grundwürfel */
-.fp-legacy-cube .fp-cube > div > span {
+/* Einzelwürfel */
+.fp-hero-cube .container .cube > div > span {
   position: relative;
   display: inline-block;
   width: 50px;
   height: 50px;
-  z-index: calc(var(--i));
+  z-index: calc(1 * var(--i));
   cursor: pointer;
   pointer-events: auto;
 
-  /* Default (überschrieben von Streifen-Regeln) */
   --flag-color: #ffffff;
   --flag-color-light: #f2f2f2;
   --flag-color-lighter: #e6e6e6;
 
   background: var(--flag-color);
-  transition: background var(--REVERT_DURATION) ease, filter var(--REVERT_DURATION) ease;
+  transition-property: background, filter;
+  transition-duration: var(--REVERT_DURATION);
+  transition-timing-function: ease;
+  overflow: visible;
+
   border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
     0 2px 6px -1px rgba(0,0,0,0.25),
     0 0 0 1px rgba(0,0,0,0.05) inset;
   filter: brightness(0.97);
-  overflow: visible;
 }
 
-.fp-legacy-cube .fp-cube > div > span::before,
-.fp-legacy-cube .fp-cube > div > span::after {
-  content:"";
-  position:absolute;
-  transition: background var(--REVERT_DURATION) ease;
-  border-radius:6px;
+/* Kanten */
+.fp-hero-cube .container .cube > div > span::before,
+.fp-hero-cube .container .cube > div > span::after {
+  content: "";
+  position: absolute;
+  transition-property: background;
+  transition-duration: var(--REVERT_DURATION);
+  transition-timing-function: ease;
 }
-
-.fp-legacy-cube .fp-cube > div > span::before {
-  left:-40px; width:40px; height:100%;
+.fp-hero-cube .container .cube > div > span::before {
+  left: -40px;
+  width: 40px;
+  height: 100%;
   background: var(--flag-color-light);
-  transform-origin:right;
+  transform-origin: right;
   transform: skewY(45deg);
-  border-top-left-radius:8px;
-  border-bottom-left-radius:8px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
-
-.fp-legacy-cube .fp-cube > div > span::after {
-  top:-40px; left:0; width:100%; height:40px;
+.fp-hero-cube .container .cube > div > span::after {
+  top: -40px;
+  left: 0;
+  width: 100%;
+  height: 40px;
   background: var(--flag-color-lighter);
-  transform-origin:bottom;
+  transform-origin: bottom;
   transform: skewX(45deg);
-  border-top-right-radius:8px;
-  border-top-left-radius:8px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
 
-/* ===============================
-   Streifen: Schwarz / Weiß / Grün
-   =============================== */
-.fp-legacy-cube .fp-cube > div:nth-child(1) > span {
-  --flag-color:#000000;
-  --flag-color-light:#1f1f1f;
-  --flag-color-lighter:#2f2f2f;
-  --hover-color:#000;
-  --hover-color-light:#2d2d2d;
-  --hover-color-lighter:#4f4f4f;
-}
-.fp-legacy-cube .fp-cube > div:nth-child(2) > span {
-  --flag-color:#ffffff;
-  --flag-color-light:#f2f2f2;
-  --flag-color-lighter:#e6e6e6;
-  --hover-color:#ffffff;
-  --hover-color-light:#f6f6f6;
-  --hover-color-lighter:#ececec;
-}
-.fp-legacy-cube .fp-cube > div:nth-child(3) > span {
-  --flag-color:#007a3d;
-  --flag-color-light:#00994d;
-  --flag-color-lighter:#33aa66;
-  --hover-color:#00a84f;
-  --hover-color-light:#14b462;
-  --hover-color-lighter:#42c27d;
-}
-
-/* Rotes „Dreieck“ – oberste Zelle jeder Spalte.
-   Falls NICHT gewünscht, diesen Block ENTFERNEN oder auskommentieren. */
-.fp-legacy-cube .fp-cube > div > span:first-child {
-  --flag-color:#ce1126;
-  --flag-color-light:#e63946;
-  --flag-color-lighter:#f06263;
-  --hover-color:#ef1d3b;
-  --hover-color-light:#fa5066;
-  --hover-color-lighter:#ff7786;
-}
-
-/* Hover (Desktop) */
+/* Hover Verhalten (sofort einblenden) */
 @media (hover:hover) {
-  .fp-legacy-cube .fp-cube > div > span:hover {
-    transition-duration:0s;
+  .fp-hero-cube .container .cube > div > span:hover {
+    transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1.06)
-      drop-shadow(0 0 10px var(--hover-color))
-      drop-shadow(0 0 18px var(--hover-color));
+    filter: drop-shadow(0 0 20px var(--hover-color));
   }
-  .fp-legacy-cube .fp-cube > div > span:hover::before {
-    transition-duration:0s;
+  .fp-hero-cube .container .cube > div > span:hover::before,
+  .fp-hero-cube .container .cube > div > span:hover::after {
+    transition-duration: 0s;
     background: var(--hover-color-light);
   }
-  .fp-legacy-cube .fp-cube > div > span:hover::after {
-    transition-duration:0s;
-    background: var(--hover-color-lighter);
-  }
 }
-
-/* Touch */
 @media (hover:none) {
-  .fp-legacy-cube .fp-cube > div > span:active {
-    transition-duration:0s;
+  .fp-hero-cube .container .cube > div > span:active {
+    transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1.05) drop-shadow(0 0 12px var(--hover-color));
+    filter: drop-shadow(0 0 12px var(--hover-color));
   }
 }
 
-/* SOLID MODE – keine helleren Seiten, keine sichtbaren Ränder/Abstufungen */
-.fp-legacy-cube.fp-solid .fp-cube > div > span {
-  --flag-color-light: var(--flag-color);
-  --flag-color-lighter: var(--flag-color);
-  box-shadow: none;
-  filter: none;
-  border-radius: 4px;
+/* Hover-Farblogik (Palästina) */
+/* Oben - Schwarz */
+.fp-hero-cube .container .cube > div:nth-child(1) > span {
+  --hover-color: #000000;
+  --hover-color-light: #333333;
+  --hover-color-lighter: #555555;
 }
-.fp-legacy-cube.fp-solid .fp-cube > div > span::before,
-.fp-legacy-cube.fp-solid .fp-cube > div > span::after {
-  background: var(--flag-color);
-  border-radius: 4px;
+/* Mitte - Weiß */
+.fp-hero-cube .container .cube > div:nth-child(2) > span {
+  --hover-color: #ffffff;
+  --hover-color-light: #f2f2f2;
+  --hover-color-lighter: #e6e6e6;
 }
-
-/* Kleiner auf sehr schmalen Screens */
-@media (max-width: 430px) {
-  .fp-legacy-cube {
-    --cube-size: 420px;
-  }
-  .fp-legacy-cube .fp-cube > div > span {
-    width: 46px;
-    height: 46px;
-  }
+/* Unten - Grün */
+.fp-hero-cube .container .cube > div:nth-child(3) > span {
+  --hover-color: #007a3d;
+  --hover-color-light: #00994d;
+  --hover-color-lighter: #33aa66;
+}
+/* Linkes rotes Dreieck (oberste Zelle jeder Spalte) */
+.fp-hero-cube .container .cube > div > span:first-child {
+  --hover-color: #ce1126;
+  --hover-color-light: #e63946;
+  --hover-color-lighter: #f06263;
 }
