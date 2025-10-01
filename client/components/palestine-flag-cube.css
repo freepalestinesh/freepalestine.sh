@@ -1,36 +1,45 @@
 /* ==========================================================================
-   Palestine Flag Cube (gekapselte Version)
-   Basis: Dein Original-Snippet, aber:
-   - Keine globalen Resets
-   - Alle Selektoren geprefixt (.pfc-*)
-   - Parametrisierte Variablen (--pfc-revert, --pfc-min-scale)
-   - Responsives Scale mit clamp
+   Palestine Flag Cube Stable
+   - Keine globalen Reset-Selektoren
+   - Fixe Stage (Quadrat), interne Skalierung via transform
+   - Prefixed (.pfc-)
    ========================================================================== */
 
 .pfc-root {
-  --pfc-base-width: 520px;
-  --pfc-min-scale: 0.55;
+  --pfc-base: 520px;
+  --pfc-scale: 1;
   --pfc-revert: 6s;
-  --pfc-scale: clamp(var(--pfc-min-scale), (100vw - 2rem) / var(--pfc-base-width), 1);
+
   width: 100%;
-  max-width: var(--pfc-base-width);
-  height: calc(var(--pfc-base-width) * var(--pfc-scale));
+  /* Stage bleibt quadratisch; verhindert Layout-Shift beim Skalieren */
+  aspect-ratio: 1 / 1;
+  max-width: var(--pfc-base);
   position: relative;
   margin: 0 auto;
   pointer-events: none;
   line-height: 0;
 }
 
+/* Viewport hält die absolute Basisfläche (unskaliert) */
+.pfc-viewport {
+  position: absolute;
+  inset: 0;
+}
+
+/* Skaliert komplette Szene um die Mitte */
 .pfc-scale {
   position: absolute;
   inset: 0;
-  width: var(--pfc-base-width);
-  height: var(--pfc-base-width);
-  transform: scale(var(--pfc-scale));
-  transform-origin: top left;
+  transform: translate(-50%, -50%) scale(var(--pfc-scale));
+  top: 50%;
+  left: 50%;
+  width: var(--pfc-base);
+  height: var(--pfc-base);
+  transform-origin: center center;
   pointer-events: none;
 }
 
+/* Isometrische Container-Schiebung */
 .pfc-container {
   position: relative;
   top: -80px;
@@ -38,21 +47,25 @@
   pointer-events: none;
 }
 
+/* Layer */
 .pfc-layer {
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
+
 .pfc-layer:nth-child(2) {
   z-index: 1;
   transform: translate(-60px, -60px);
 }
+
 .pfc-layer:nth-child(3) {
   z-index: 3;
   transform: translate(60px, 60px);
 }
 
-.pfc-layer > div {
+/* Spalten */
+.pfc-col {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -61,7 +74,8 @@
   pointer-events: none;
 }
 
-.pfc-layer > div > span {
+/* Tiles */
+.pfc-col > span {
   position: relative;
   display: inline-block;
   width: 50px;
@@ -79,26 +93,25 @@
   transition-duration: var(--pfc-revert);
   transition-timing-function: ease;
 
-  overflow: visible;
   border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
     0 2px 6px -1px rgba(0,0,0,0.25),
     0 0 0 1px rgba(0,0,0,0.05) inset;
   filter: brightness(0.97);
+  overflow: visible;
 }
 
-.pfc-layer > div > span::before,
-.pfc-layer > div > span::after {
+/* Kanten */
+.pfc-col > span::before,
+.pfc-col > span::after {
   content: "";
   position: absolute;
-  transition-property: background;
-  transition-duration: var(--pfc-revert);
-  transition-timing-function: ease;
+  transition: background var(--pfc-revert) ease;
   border-radius: 6px;
 }
 
-.pfc-layer > div > span::before {
+.pfc-col > span::before {
   left: -40px;
   width: 40px;
   height: 100%;
@@ -109,7 +122,7 @@
   border-bottom-left-radius: 8px;
 }
 
-.pfc-layer > div > span::after {
+.pfc-col > span::after {
   top: -40px;
   left: 0;
   width: 100%;
@@ -121,57 +134,52 @@
   border-top-left-radius: 8px;
 }
 
-/* Farb-Basis (Hover-Palästina-Farben) */
-.pfc-layer > div:nth-child(1) > span {
+/* Farbzuweisungen (Palästina-Farblogik + rotes Dreieck) */
+.pfc-layer > .pfc-col:nth-child(1) > span {
   --hover-color: #000000;
   --hover-color-light: #2d2d2d;
   --hover-color-lighter: #4f4f4f;
 }
-.pfc-layer > div:nth-child(2) > span {
+.pfc-layer > .pfc-col:nth-child(2) > span {
   --hover-color: #ffffff;
   --hover-color-light: #f2f2f2;
   --hover-color-lighter: #e6e6e6;
 }
-.pfc-layer > div:nth-child(3) > span {
+.pfc-layer > .pfc-col:nth-child(3) > span {
   --hover-color: #007a3d;
   --hover-color-light: #00994d;
   --hover-color-lighter: #33aa66;
 }
-
-/* Rotes Dreieck links (oberste Zelle pro Spalte) */
-.pfc-layer > div > span:first-child {
+/* linkes Dreieck (erstes span jeder Spalte) */
+.pfc-col > span:first-child {
   --hover-color: #ce1126;
   --hover-color-light: #e63946;
   --hover-color-lighter: #f06263;
 }
 
-/* Hover / Desktop */
+/* Hover Desktop */
 @media (hover:hover) {
-  .pfc-root:not(.pfc-no-hover) .pfc-layer > div > span:hover {
+  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover {
     transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1) drop-shadow(0 0 20px var(--hover-color));
+    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
   }
-  .pfc-root:not(.pfc-no-hover) .pfc-layer > div > span:hover::before,
-  .pfc-root:not(.pfc-no-hover) .pfc-layer > div > span:hover::after {
+  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::before,
+  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::after {
     transition-duration: 0s;
     background: var(--hover-color-light);
   }
 }
 
-/* Touch (Tap) */
+/* Touch */
 @media (hover:none) {
-  .pfc-root:not(.pfc-no-hover) .pfc-layer > div > span:active {
+  .pfc-root:not(.pfc-no-hover) .pfc-col > span:active {
     transition-duration: 0s;
     background: var(--hover-color);
     filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
   }
 }
 
-/* Optional: kleinere Größe für extrem schmale Screens */
-@media (max-width: 420px) {
-  .pfc-layer > div > span {
-    width: 44px;
-    height: 44px;
-  }
-}
+/* Step-basiertes Scale-Finetuning optional (optional als Ergänzung):
+   Wenn du mode="stepped" verwendest, kannst du über Utility-Klassen alternative
+   Breakpoints definieren, z. B. .pfc-step-sm ... (hier nur Beispiel, nicht aktiv) */
