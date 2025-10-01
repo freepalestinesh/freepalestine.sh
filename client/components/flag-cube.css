@@ -1,36 +1,43 @@
-/* Flag Cube Styles (muss zu FlagCube.tsx passen) */
-.pfc-root {
-  --pfc-base: 520px;
-  --pfc-scale: 1;
-  --pfc-revert: 6s;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: var(--pfc-base);
+/* Legacy Palestine Hover Cube (Variante 1)
+   - Basis: Alle Würfel weiß
+   - Farben erscheinen nur beim Hover und faden langsam zurück
+   - REVERT Dauer anpassbar über --REVERT_DURATION
+*/
+
+.flagcube-root {
+  --REVERT_DURATION: 6s;
   position: relative;
-  margin: 0 auto;
+  width: 520px;
+  height: 520px; /* Fix, damit Höhe reserviert wird */
   pointer-events: none;
-  line-height: 0;
-  font-size: 0;
+  user-select: none;
 }
-.pfc-viewport { position: absolute; inset: 0; }
-.pfc-scale {
-  position: absolute; inset: 0;
-  top: 50%; left: 50%;
-  width: var(--pfc-base); height: var(--pfc-base);
-  transform: translate(-50%, -50%) scale(var(--pfc-scale));
-  transform-origin: center center;
-  pointer-events: none;
-}
-.pfc-container {
+
+/* Isometrischer Container */
+.flagcube-root .container {
   position: relative;
   top: -80px;
   transform: skewY(-20deg);
   pointer-events: none;
 }
-.pfc-layer { position: relative; z-index: 2; pointer-events: none; }
-.pfc-layer:nth-child(2) { z-index: 1; transform: translate(-60px,-60px); }
-.pfc-layer:nth-child(3) { z-index: 3; transform: translate(60px,60px); }
-.pfc-col {
+
+/* Layer / Versatz */
+.flagcube-root .container .cube {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.flagcube-root .container .cube:nth-child(2) {
+  z-index: 1;
+  transform: translate(-60px, -60px);
+}
+.flagcube-root .container .cube:nth-child(3) {
+  z-index: 3;
+  transform: translate(60px, 60px);
+}
+
+/* Spalten */
+.flagcube-root .container .cube > div {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -38,10 +45,13 @@
   transform: translate(calc(-70px * var(--x)), calc(-60px * var(--y)));
   pointer-events: none;
 }
-.pfc-col > span {
+
+/* Tiles */
+.flagcube-root .container .cube > div > span {
   position: relative;
   display: inline-block;
-  width: 50px; height: 50px;
+  width: 50px;
+  height: 50px;
   z-index: calc(1 * var(--i));
   cursor: pointer;
   pointer-events: auto;
@@ -49,68 +59,87 @@
   --flag-color-light: #f2f2f2;
   --flag-color-lighter: #e6e6e6;
   background: var(--flag-color);
-  transition: background var(--pfc-revert) ease, filter var(--pfc-revert) ease;
+  transition: background var(--REVERT_DURATION) ease, filter var(--REVERT_DURATION) ease;
+  overflow: visible;
   border-radius: 9px;
   box-shadow:
     0 4px 14px -2px rgba(0,0,0,0.18),
     0 2px 6px -1px rgba(0,0,0,0.25),
     0 0 0 1px rgba(0,0,0,0.05) inset;
   filter: brightness(0.97);
-  overflow: visible;
 }
-.pfc-col > span::before,
-.pfc-col > span::after {
-  content:"";
-  position:absolute;
-  transition: background var(--pfc-revert) ease;
-  border-radius:6px;
+
+.flagcube-root .container .cube > div > span::before,
+.flagcube-root .container .cube > div > span::after {
+  content: "";
+  position: absolute;
+  transition: background var(--REVERT_DURATION) ease;
+  border-radius: 6px;
 }
-.pfc-col > span::before {
-  left:-40px; width:40px; height:100%;
+
+.flagcube-root .container .cube > div > span::before {
+  left: -40px;
+  width: 40px;
+  height: 100%;
   background: var(--flag-color-light);
-  transform-origin:right;
-  transform:skewY(45deg);
-  border-top-left-radius:8px;
-  border-bottom-left-radius:8px;
+  transform-origin: right;
+  transform: skewY(45deg);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
-.pfc-col > span::after {
-  top:-40px; left:0; width:100%; height:40px;
+.flagcube-root .container .cube > div > span::after {
+  top: -40px;
+  left: 0;
+  width: 100%;
+  height: 40px;
   background: var(--flag-color-lighter);
-  transform-origin:bottom;
-  transform:skewX(45deg);
-  border-top-right-radius:8px;
-  border-top-left-radius:8px;
+  transform-origin: bottom;
+  transform: skewX(45deg);
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
-/* Farbzuweisung Spalten */
-.pfc-layer > .pfc-col:nth-child(1) > span {
-  --hover-color:#000; --hover-color-light:#2d2d2d; --hover-color-lighter:#4f4f4f;
+
+/* Farb-Definitionen (nur Hover) */
+.flagcube-root .container .cube > div:nth-child(1) > span {
+  --hover-color: #000000;
+  --hover-color-light: #333333;
+  --hover-color-lighter: #555555;
 }
-.pfc-layer > .pfc-col:nth-child(2) > span {
-  --hover-color:#fff; --hover-color-light:#f2f2f2; --hover-color-lighter:#e6e6e6;
+.flagcube-root .container .cube > div:nth-child(2) > span {
+  --hover-color: #ffffff;
+  --hover-color-light: #f2f2f2;
+  --hover-color-lighter: #e6e6e6;
 }
-.pfc-layer > .pfc-col:nth-child(3) > span {
-  --hover-color:#007a3d; --hover-color-light:#00994d; --hover-color-lighter:#33aa66;
+.flagcube-root .container .cube > div:nth-child(3) > span {
+  --hover-color: #007a3d;
+  --hover-color-light: #00994d;
+  --hover-color-lighter: #33aa66;
 }
-/* Rotes Dreieck */
-.pfc-col > span:first-child {
-  --hover-color:#ce1126; --hover-color-light:#e63946; --hover-color-lighter:#f06263;
+.flagcube-root .container .cube > div > span:first-child {
+  --hover-color: #ce1126;
+  --hover-color-light: #e63946;
+  --hover-color-lighter: #f06263;
 }
+
+/* Hover Desktop */
 @media (hover:hover) {
-  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover {
-    transition-duration:0s;
+  .flagcube-root .container .cube > div > span:hover {
+    transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
+    filter: drop-shadow(0 0 20px var(--hover-color));
   }
-  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::before,
-  .pfc-root:not(.pfc-no-hover) .pfc-col > span:hover::after {
-    transition-duration:0s;
+  .flagcube-root .container .cube > div > span:hover::before,
+  .flagcube-root .container .cube > div > span:hover::after {
+    transition-duration: 0s;
     background: var(--hover-color-light);
   }
 }
+
+/* Touch */
 @media (hover:none) {
-  .pfc-root:not(.pfc-no-hover) .pfc-col > span:active {
-    transition-duration:0s;
+  .flagcube-root .container .cube > div > span:active {
+    transition-duration: 0s;
     background: var(--hover-color);
-    filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
+    filter: drop-shadow(0 0 12px var(--hover-color));
   }
 }
