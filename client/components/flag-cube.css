@@ -1,113 +1,155 @@
+/* Scaled Original Cube – identische Desktop-Geometrie, proportional verkleinert auf Mobile */
+
+/* ROOT: reserviert vertikalen Platz und definiert Skalierung */
 .flag-cube-root {
-  width: 340px;
-  max-width: 90vw;
+  /* Desktop-Basisbreite: 520px (ergibt genügend Platz für 3 Layer + Offsets) */
+  --base-width: 520px;
+  /* Skaliert zwischen 55% und 100%, abhängig von verfügbarem Platz */
+  --scale: clamp(0.55, (100vw - 2rem) / var(--base-width), 1);
+  width: 100%;
+  max-width: var(--base-width);
+  height: calc(var(--base-width) * var(--scale)); /* reservierter Raum */
   position: relative;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  line-height: 0;
+  margin: 0 auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .flag-cube-scale {
-  position: relative;
-  transform: translateZ(0);
-}
-
-.container {
-  position: relative;
-  /* Wir lassen die Layer absolute übereinander liegen */
-}
-
-.cube {
   position: absolute;
   top: 0;
   left: 0;
-  /* Tiefe (data-layer) verschiebt leicht nach rechts + unten für pseudo 3D */
-  --layer: attr(data-layer number);
-  transform:
-    translate(
-      calc(var(--layer) * 18px),
-      calc(var(--layer) * 20px)
-    );
-  display: flex;
-  gap: 18px;
+  width: var(--base-width);
+  height: var(--base-width);
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  pointer-events: none;
 }
 
-.cube > div {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 10px;
+.flag-cube-scale .container {
   position: relative;
-  /* X-Versatz für jede Säule */
-  transform: translateX(calc(var(--x) * 66px));
+  top: -80px;
+  transform: skewY(-20deg);
+  pointer-events: none;
 }
 
-/* Einzelne kleine Würfel */
-.cube span {
-  --size: 54px;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 14px;
-  background: #f5f5f5;
+.flag-cube-scale .container .cube {
   position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.flag-cube-scale .container .cube:nth-child(2) {
+  z-index: 1;
+  transform: translate(-60px, -60px);
+}
+.flag-cube-scale .container .cube:nth-child(3) {
+  z-index: 3;
+  transform: translate(60px, 60px);
+}
+
+.flag-cube-scale .container .cube > div {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  transform: translate(calc(-70px * var(--x)), calc(-60px * var(--y)));
+  pointer-events: none;
+}
+
+.flag-cube-scale .container .cube > div > span {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  z-index: calc(1 * var(--i));
+  cursor: pointer;
+  pointer-events: auto;
+  --flag-color: #ffffff;
+  --flag-color-light: #f2f2f2;
+  --flag-color-lighter: #e6e6e6;
+  background: var(--flag-color);
+  transition-property: background, filter;
+  transition-duration: 6s;
+  transition-timing-function: ease;
+  overflow: visible;
+  border-radius: 9px;
   box-shadow:
-    0 2px 4px rgba(0,0,0,0.18),
-    0 10px 28px -10px rgba(0,0,0,0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.6);
-  transition: transform 260ms ease, background 260ms ease, box-shadow 260ms ease;
+    0 4px 14px -2px rgba(0,0,0,0.18),
+    0 2px 6px -1px rgba(0,0,0,0.25),
+    0 0 0 1px rgba(0,0,0,0.05) inset;
+  filter: brightness(0.97);
 }
 
-/* Leichte Höhenstaffelung (i=3 oben) */
-.cube span {
-  transform: translateY(calc((var(--i) - 1) * -14px));
+.flag-cube-scale .container .cube > div > span::before,
+.flag-cube-scale .container .cube > div > span::after {
+  content: "";
+  position: absolute;
+  transition-property: background;
+  transition-duration: 6s;
+  transition-timing-function: ease;
+  border-radius: 6px;
 }
 
-/* Farb-Akzent: oberste beiden Layer plus oberer i-Level */
-.cube[data-layer="0"] span,
-.cube[data-layer="1"] span {
-  background: linear-gradient(145deg,#ec3a60,#c81942);
-  color: #fff;
+.flag-cube-scale .container .cube > div > span::before {
+  left: -40px;
+  width: 40px;
+  height: 100%;
+  background: var(--flag-color-light);
+  transform-origin: right;
+  transform: skewY(45deg);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.flag-cube-scale .container .cube > div > span::after {
+  top: -40px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: var(--flag-color-lighter);
+  transform-origin: bottom;
+  transform: skewX(45deg);
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
 
-.cube[data-layer="0"] span::after,
-.cube[data-layer="1"] span::after {
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.55), transparent 60%),
-    linear-gradient(145deg, rgba(255,255,255,0.65), rgba(0,0,0,0.15));
-  mix-blend-mode: overlay;
-  pointer-events:none;
-}
-
-.cube[data-layer="2"] span {
-  background: #ffffff;
-}
-
-.cube[data-layer="0"] span:nth-child(1),
-.cube[data-layer="0"] span:nth-child(2),
-.cube[data-layer="0"] span:nth-child(3) {
-  /* Top-Layer zusätzliches Glow */
-  box-shadow:
-    0 4px 10px rgba(0,0,0,0.25),
-    0 18px 42px -14px rgba(0,0,0,0.45),
-    0 0 24px -4px rgba(236,58,96,0.55),
-    inset 0 0 0 1px rgba(255,255,255,0.65);
-}
-
-/* Hover (optional) */
 @media (hover:hover) {
-  .cube span:hover {
-    transform: translateY(calc((var(--i) - 1) * -14px - 6px));
+  .flag-cube-scale .container .cube > div > span:hover {
+    transition-duration: 0s;
+    background: var(--hover-color);
+    filter: brightness(1) drop-shadow(0 0 18px var(--hover-color));
+  }
+  .flag-cube-scale .container .cube > div > span:hover::before,
+  .flag-cube-scale .container .cube > div > span:hover::after {
+    transition-duration: 0s;
+    background: var(--hover-color-light);
   }
 }
 
-/* Responsive Skalierung */
-@media (max-width: 640px) {
-  .cube span { --size: 46px; }
-  .cube > div { transform: translateX(calc(var(--x) * 56px)); }
-  .cube { transform: translate(calc(var(--layer) * 16px), calc(var(--layer) * 18px)); }
-  .flag-cube-root { width: 300px; }
+@media (hover:none) {
+  .flag-cube-scale .container .cube > div > span:active {
+    transition-duration: 0s;
+    background: var(--hover-color);
+    filter: brightness(1) drop-shadow(0 0 12px var(--hover-color));
+  }
+}
+
+.flag-cube-scale .container .cube > div:nth-child(1) > span {
+  --hover-color: #000000;
+  --hover-color-light: #2d2d2d;
+  --hover-color-lighter: #4f4f4f;
+}
+.flag-cube-scale .container .cube > div:nth-child(2) > span {
+  --hover-color: #ffffff;
+  --hover-color-light: #f2f2f2;
+  --hover-color-lighter: #e6e6e6;
+}
+.flag-cube-scale .container .cube > div:nth-child(3) > span {
+  --hover-color: #007a3d;
+  --hover-color-light: #00994d;
+  --hover-color-lighter: #33aa66;
+}
+
+.flag-cube-scale .container .cube > div > span:first-child {
+  --hover-color: #ce1126;
+  --hover-color-light: #e63946;
+  --hover-color-lighter: #f06263;
 }
