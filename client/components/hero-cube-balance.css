@@ -3,7 +3,10 @@
   margin-top: 5.5rem;  /* ≈ 88px */
   margin-bottom: 2.5rem; /* ≈ 40px */
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: 10%; /* Positioniert den Würfel auf der rechten Seite */
+  width: 100%;
+  min-height: 200px; /* Gibt dem Container eine Mindesthöhe für vertikale Zentrierung */
 }
 
 @media (min-width: 640px) {

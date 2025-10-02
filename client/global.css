@@ -188,4 +188,13 @@
     );
     color: hsl(var(--accent-foreground));
   }
+
+  /* ULTIMATIVE WÜRFEL-REPARATUR - ENTFERNT */
+  
+  /* Einfache Würfel-Sichtbarkeit */
+  .fp-hero-cube {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 }
